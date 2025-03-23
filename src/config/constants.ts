@@ -1,0 +1,11 @@
+export const API_BASE_URL = 'http://127.0.0.1:8000';
+
+export const API_ENDPOINTS = {
+  TRANSACTIONS: '/api/transactions',
+  ASSETS: '/api/assets',
+  ACCOUNT: '/api/account',
+  PERFORMANCE: '/api/performance',
+};
+
+export const SUPPORTED_LANGUAGES = ['en', 'zh', 'ja'] as const;
+export type SupportedLanguage = typeof SUPPORTED_LANGUAGES[number];
