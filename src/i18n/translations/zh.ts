@@ -1,4 +1,4 @@
-export default {
+const translations = {
   common: {
     loading: '加载中...',
     error: '错误',
@@ -24,3 +24,5 @@ export default {
     ja: '日本語',
   }
 };
+
+export default translations;

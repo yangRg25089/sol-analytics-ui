@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Card, CardBody, CardHeader, Image, Progress, Chip } from '@nextui-org/react';
+import { Card, CardBody, CardHeader, Image, Chip } from '@nextui-org/react';
 import { motion } from 'framer-motion';
-import { API_BASE_URL, API_ENDPOINTS } from '../config/constants';
 import { TokenBalance, NFTMetadata, PerformanceMetrics } from '../types/solana';
 import { useTranslation } from 'react-i18next';
 
@@ -14,7 +13,7 @@ const Assets: React.FC<AssetsProps> = ({ walletAddress }) => {
   const { t } = useTranslation();
   const [tokens, setTokens] = useState<TokenBalance[]>([]);
   const [nfts, setNfts] = useState<NFTMetadata[]>([]);
-  const [performance, setPerformance] = useState<PerformanceMetrics | null>(null);
+  const [performance] = useState<PerformanceMetrics | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 

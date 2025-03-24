@@ -1,7 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
-import { SupportedLanguage } from '../config/constants';
 
 const LanguageSelector: React.FC = () => {
   const { i18n, t } = useTranslation();
