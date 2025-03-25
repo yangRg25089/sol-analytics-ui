@@ -7,8 +7,8 @@ export interface AccountInfo {
 
 export interface TokenBalance {
   mint: string;
-  symbol: string;
   name: string;
+  symbol: string;
   amount: number;
   decimals: number;
   usdPrice: number;
@@ -18,13 +18,8 @@ export interface TokenBalance {
 export interface NFTMetadata {
   mint: string;
   name: string;
-  symbol: string;
   image: string;
   collection?: string;
-  attributes?: Array<{
-    trait_type: string;
-    value: string;
-  }>;
 }
 
 export interface TransactionData {
@@ -40,9 +35,46 @@ export interface TransactionData {
 }
 
 export interface PerformanceMetrics {
-  totalValue: number;
   valueChange24h: number;
-  valueChange7d: number;
   percentageChange24h: number;
+  valueChange7d: number;
   percentageChange7d: number;
+}
+
+export interface Token {
+  id: string;
+  name: string;
+  symbol: string;
+  totalSupply: number;
+  ownerId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TokenFavorite {
+  id: string;
+  userId: string;
+  tokenId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Transaction {
+  id: string;
+  tokenId: string;
+  fromAddress: string;
+  toAddress: string;
+  amount: number;
+  timestamp: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface User {
+  id: string;
+  googleId: string;
+  solanaAddress?: string;
+  createdAt: string;
+  updatedAt: string;
+  isSuperUser: boolean;
 }

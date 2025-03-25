@@ -8,6 +8,7 @@ import LanguageSelector from './components/LanguageSelector';
 import Assets from './components/Assets';
 import Transactions from './components/Transactions';
 import Home from './components/Home';
+import { TokenManagement } from './components/TokenManagement';
 import axios from 'axios';
 import { API_BASE_URL } from './config/constants';
 
@@ -68,6 +69,9 @@ const App: React.FC = () => {
           <NavbarItem>
             <Link to="/assets">Assets</Link>
           </NavbarItem>
+          <NavbarItem>
+            <Link to="/token-management">Token Management</Link>
+          </NavbarItem>
         </NavbarContent>
         <NavbarContent>
           <NavbarItem>
@@ -80,6 +84,7 @@ const App: React.FC = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/transactions" element={<Transactions walletAddress="demo-wallet" />} />
         <Route path="/assets" element={<Assets walletAddress="demo-wallet" />} />
+        <Route path="/token-management" element={<TokenManagement />} />
       </Routes>
     </>
   );
