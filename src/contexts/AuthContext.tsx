@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import axios from 'axios';
 import { AuthState } from '../types/auth';
+import { API_BASE_URL } from '../config/constants';
 
 interface AuthContextType {
   authState: AuthState;
@@ -23,10 +24,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loading: true,
   });
 
-  const login = useCallback(() => {
-    // 直接重定向到 Google OAuth 登录页面
-    const googleAuthUrl = `${process.env.REACT_APP_API_URL}/api/auth/google/authorize`;
-    window.location.href = googleAuthUrl;
+  const login = useCallback(async () => {
+    // 重定向到 Google OAuth 登录页面，并设置回调 URL
+    const redirectUri = `${window.location.origin}/oauth-success`;
+    window.location.href = `${API_BASE_URL}/accounts/google/login/?redirect_uri=${encodeURIComponent(redirectUri)}`;
   }, []);
 
   const logout = useCallback(async () => {
