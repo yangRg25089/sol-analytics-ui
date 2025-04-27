@@ -1,6 +1,12 @@
+import {
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+} from '@nextui-org/react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
 
 const LanguageSelector: React.FC = () => {
   const { i18n, t } = useTranslation();
@@ -20,10 +26,7 @@ const LanguageSelector: React.FC = () => {
           {t(`language.${i18n.language}`)}
         </Button>
       </DropdownTrigger>
-      <DropdownMenu 
-        aria-label="Language selection" 
-        onAction={changeLanguage}
-      >
+      <DropdownMenu aria-label="Language selection" onAction={changeLanguage}>
         <DropdownItem key="en">{t('language.en')}</DropdownItem>
         <DropdownItem key="zh">{t('language.zh')}</DropdownItem>
         <DropdownItem key="ja">{t('language.ja')}</DropdownItem>

@@ -9,4 +9,4 @@ export const API_ENDPOINTS = {
 };
 
 export const SUPPORTED_LANGUAGES = ['en', 'zh', 'ja'] as const;
-export type SupportedLanguage = typeof SUPPORTED_LANGUAGES[number];
+export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];

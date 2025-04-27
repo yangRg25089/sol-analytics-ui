@@ -1,5 +1,16 @@
+import {
+  Button,
+  Card,
+  CardBody,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  useDisclosure,
+} from '@nextui-org/react';
 import React, { useState } from 'react';
-import { Card, CardBody, Button, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from '@nextui-org/react';
 import { useTranslation } from 'react-i18next';
 
 interface TokenTransferProps {
@@ -61,14 +72,18 @@ export const TokenTransfer: React.FC<TokenTransferProps> = ({
             <Input
               label={t('token.toAddress')}
               value={transferData.toAddress}
-              onChange={(e) => setTransferData({ ...transferData, toAddress: e.target.value })}
+              onChange={(e) =>
+                setTransferData({ ...transferData, toAddress: e.target.value })
+              }
               placeholder="Enter Solana address"
             />
             <Input
               type="number"
               label={t('token.amount')}
               value={transferData.amount}
-              onChange={(e) => setTransferData({ ...transferData, amount: e.target.value })}
+              onChange={(e) =>
+                setTransferData({ ...transferData, amount: e.target.value })
+              }
               placeholder="Enter amount"
             />
           </ModalBody>
@@ -88,4 +103,4 @@ export const TokenTransfer: React.FC<TokenTransferProps> = ({
       </Modal>
     </>
   );
-}; 
+};

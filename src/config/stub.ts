@@ -11,12 +11,12 @@ export const STUB_DATA = {
       id: 'stub-issuer-1',
       email: 'issuer@example.com',
       is_token_issuer: true,
-    }
+    },
   },
   tokens: [
     // stub token data
   ],
   transactions: [
     // stub transaction data
-  ]
+  ],
 };

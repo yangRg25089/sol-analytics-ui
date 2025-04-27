@@ -1,5 +1,5 @@
-import React from 'react';
 import { Button } from '@nextui-org/react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface TokenFavoriteProps {
@@ -43,4 +43,4 @@ export const TokenFavorite: React.FC<TokenFavoriteProps> = ({
       {isFavorite ? t('token.favorite') : t('token.unfavorite')}
     </Button>
   );
-}; 
+};

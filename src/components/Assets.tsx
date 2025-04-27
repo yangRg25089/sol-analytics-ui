@@ -1,9 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Chip,
+  Image,
+} from '@nextui-org/react';
 import axios from 'axios';
-import { Card, CardBody, CardHeader, Image, Chip, Button } from '@nextui-org/react';
 import { motion } from 'framer-motion';
-import { TokenBalance, NFTMetadata, PerformanceMetrics } from '../types/solana';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { NFTMetadata, PerformanceMetrics, TokenBalance } from '../types/solana';
 import { TokenFavorite } from './TokenFavorite';
 import { TokenTransfer } from './TokenTransfer';
 
@@ -26,7 +34,7 @@ const Assets: React.FC<AssetsProps> = ({ walletAddress }) => {
         const [tokensRes, nftsRes, favoritesRes] = await Promise.all([
           axios.get(`/api/tokens/${walletAddress}`),
           axios.get(`/api/nfts/${walletAddress}`),
-          axios.get('/api/tokens/favorites')
+          axios.get('/api/tokens/favorites'),
         ]);
         setTokens(tokensRes.data);
         setNfts(nftsRes.data);
@@ -44,7 +52,7 @@ const Assets: React.FC<AssetsProps> = ({ walletAddress }) => {
   }, [walletAddress]);
 
   const handleToggleFavorite = (tokenId: string) => {
-    setFavorites(prev => {
+    setFavorites((prev) => {
       const newFavorites = new Set(prev);
       if (newFavorites.has(tokenId)) {
         newFavorites.delete(tokenId);
@@ -68,8 +76,10 @@ const Assets: React.FC<AssetsProps> = ({ walletAddress }) => {
   if (loading) return <div>Loading assets...</div>;
   if (error) return <div>Error loading assets: {error.message}</div>;
 
-  const totalValue = tokens.reduce((sum, token) => 
-    sum + (token.amount * token.usdPrice / Math.pow(10, token.decimals)), 0
+  const totalValue = tokens.reduce(
+    (sum, token) =>
+      sum + (token.amount * token.usdPrice) / Math.pow(10, token.decimals),
+    0,
   );
 
   return (
@@ -85,13 +95,17 @@ const Assets: React.FC<AssetsProps> = ({ walletAddress }) => {
             <div className="flex gap-4">
               <div>
                 <p>24h Change</p>
-                <Chip color={performance.valueChange24h > 0 ? "success" : "danger"}>
+                <Chip
+                  color={performance.valueChange24h > 0 ? 'success' : 'danger'}
+                >
                   {performance.percentageChange24h.toFixed(2)}%
                 </Chip>
               </div>
               <div>
                 <p>7d Change</p>
-                <Chip color={performance.valueChange7d > 0 ? "success" : "danger"}>
+                <Chip
+                  color={performance.valueChange7d > 0 ? 'success' : 'danger'}
+                >
                   {performance.percentageChange7d.toFixed(2)}%
                 </Chip>
               </div>
@@ -107,7 +121,7 @@ const Assets: React.FC<AssetsProps> = ({ walletAddress }) => {
         </CardHeader>
         <CardBody>
           <div className="space-y-4">
-            {tokens.map(token => (
+            {tokens.map((token) => (
               <motion.div
                 key={token.mint}
                 initial={{ opacity: 0, y: 20 }}
@@ -133,7 +147,11 @@ const Assets: React.FC<AssetsProps> = ({ walletAddress }) => {
                       {(token.amount / Math.pow(10, token.decimals)).toFixed(4)}
                     </p>
                     <p className="text-sm text-default-400">
-                      ${(token.usdPrice * token.amount / Math.pow(10, token.decimals)).toFixed(2)}
+                      $
+                      {(
+                        (token.usdPrice * token.amount) /
+                        Math.pow(10, token.decimals)
+                      ).toFixed(2)}
                     </p>
                   </div>
                   <div className="flex gap-2">
@@ -162,7 +180,7 @@ const Assets: React.FC<AssetsProps> = ({ walletAddress }) => {
         </CardHeader>
         <CardBody>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {nfts.map(nft => (
+            {nfts.map((nft) => (
               <Card key={nft.mint}>
                 <Image
                   src={nft.image}

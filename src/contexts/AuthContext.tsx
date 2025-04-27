@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
 import axios from 'axios';
-import { AuthState } from '../types/auth';
+import React, { createContext, useCallback, useContext, useState } from 'react';
+
 import { API_BASE_URL } from '../config/constants';
+import { AuthState } from '../types/auth';
 
 interface AuthContextType {
   authState: AuthState;
@@ -17,7 +18,9 @@ const AuthContext = createContext<AuthContextType>({
   connectWallet: async () => {},
 });
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [authState, setAuthState] = useState<AuthState>({
     isAuthenticated: false,
     user: null,
@@ -41,7 +44,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const connectWallet = useCallback(async (address: string) => {
     const response = await axios.post('/api/wallet/connect', { address });
-    setAuthState(prev => ({
+    setAuthState((prev) => ({
       ...prev,
       user: response.data,
     }));

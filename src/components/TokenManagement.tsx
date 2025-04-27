@@ -1,5 +1,23 @@
+import {
+  Button,
+  Card,
+  CardBody,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+  Textarea,
+  useDisclosure,
+} from '@nextui-org/react';
 import React, { useState } from 'react';
-import { Card, CardBody, Button, Input, Textarea, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, useDisclosure, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@nextui-org/react';
 import { useTranslation } from 'react-i18next';
 
 interface Token {
@@ -31,7 +49,7 @@ export const TokenManagement: React.FC = () => {
         },
         body: JSON.stringify(newToken),
       });
-      
+
       if (response.ok) {
         const token = await response.json();
         setTokens([...tokens, token]);
@@ -53,13 +71,13 @@ export const TokenManagement: React.FC = () => {
         },
         body: JSON.stringify({ action: 'mint', amount }),
       });
-      
+
       if (response.ok) {
         // 更新代币列表
         const updatedToken = await response.json();
-        setTokens(tokens.map(token => 
-          token.id === tokenId ? updatedToken : token
-        ));
+        setTokens(
+          tokens.map((token) => (token.id === tokenId ? updatedToken : token)),
+        );
       }
     } catch (error) {
       console.error('Error minting token:', error);
@@ -76,13 +94,13 @@ export const TokenManagement: React.FC = () => {
         },
         body: JSON.stringify({ action: 'burn', amount }),
       });
-      
+
       if (response.ok) {
         // 更新代币列表
         const updatedToken = await response.json();
-        setTokens(tokens.map(token => 
-          token.id === tokenId ? updatedToken : token
-        ));
+        setTokens(
+          tokens.map((token) => (token.id === tokenId ? updatedToken : token)),
+        );
       }
     } catch (error) {
       console.error('Error burning token:', error);
@@ -145,18 +163,27 @@ export const TokenManagement: React.FC = () => {
             <Input
               label={t('tokenManagement.name')}
               value={newToken.name}
-              onChange={(e) => setNewToken({ ...newToken, name: e.target.value })}
+              onChange={(e) =>
+                setNewToken({ ...newToken, name: e.target.value })
+              }
             />
             <Input
               label={t('tokenManagement.symbol')}
               value={newToken.symbol}
-              onChange={(e) => setNewToken({ ...newToken, symbol: e.target.value })}
+              onChange={(e) =>
+                setNewToken({ ...newToken, symbol: e.target.value })
+              }
             />
             <Input
               type="number"
               label={t('tokenManagement.totalSupply')}
               value={newToken.totalSupply.toString()}
-              onChange={(e) => setNewToken({ ...newToken, totalSupply: parseInt(e.target.value) })}
+              onChange={(e) =>
+                setNewToken({
+                  ...newToken,
+                  totalSupply: parseInt(e.target.value),
+                })
+              }
             />
           </ModalBody>
           <ModalFooter>
@@ -171,4 +198,4 @@ export const TokenManagement: React.FC = () => {
       </Modal>
     </div>
   );
-}; 
+};

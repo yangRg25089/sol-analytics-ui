@@ -1,0 +1,40 @@
+{
+    // 1. 设置 Prettier 为默认格式化器
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+  
+    // 2. 启用保存时格式化
+    "editor.formatOnSave": true,
+  
+    // 3. (可选但推荐) 启用保存时自动运行 ESLint 修复
+    // 这会尝试修复 ESLint 发现的问题，包括 import 排序和 Prettier 格式问题（因为我们配置了 eslint-plugin-prettier）
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit" // 使用 "explicit" 更安全，只在明确要求时修复
+      // 或者使用 "source.fixAll.eslint": true 如果你想总是尝试修复
+    },
+  
+    // 指定哪些语言需要保存时格式化 (可选，如果只想对特定文件类型生效)
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[css]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[scss]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[markdown]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
+  }

@@ -1,7 +1,9 @@
-import React, { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardBody, Spinner } from '@nextui-org/react';
+import { addScaleCorrector } from 'framer-motion';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
+
 import { useAuth } from '../contexts/AuthContext';
 
 export const OAuthSuccess: React.FC = () => {
@@ -14,31 +16,22 @@ export const OAuthSuccess: React.FC = () => {
     const handleOAuthSuccess = async () => {
       try {
         // 获取 URL 参数
-        const params = new URLSearchParams(location.search);
-        const code = params.get('code');
-        const state = params.get('state');
+        const token = new URLSearchParams(location.search).get('token');
 
-        console.log('OAuth Success - URL Parameters:', {
-          code,
-          state,
-          fullUrl: window.location.href
-        });
-
-        if (code && state) {
-          console.log('Calling backend API with code and state...');
+        if (token) {
           // 调用后端 API 验证授权码
-          const response = await fetch('/api/auth/google/callback', {
-            method: 'POST',
+          const response = await fetch('/api/auth/google_login', {
+            method: 'GET',
             headers: {
               'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ code, state }),
           });
 
           console.log('Backend API Response:', {
             status: response.status,
             ok: response.ok,
-            statusText: response.statusText
+            statusText: response.statusText,
           });
 
           if (response.ok) {
@@ -52,8 +45,8 @@ export const OAuthSuccess: React.FC = () => {
             // navigate('/');
           }
         } else {
-          console.error('Missing OAuth parameters:', { code, state });
-        //   navigate('/');
+          console.error('Missing OAuth parameters:', { token });
+          //   navigate('/');
         }
       } catch (error) {
         console.error('OAuth error:', error);
@@ -74,4 +67,4 @@ export const OAuthSuccess: React.FC = () => {
       </Card>
     </div>
   );
-}; 
+};

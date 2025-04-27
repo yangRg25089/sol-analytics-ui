@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { Input, Button, Card, CardBody, CardHeader } from '@nextui-org/react';
-import { motion } from 'framer-motion';
-import Transactions from './Transactions';
-import Assets from './Assets';
+import { Button, Card, CardBody, CardHeader, Input } from '@nextui-org/react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+
 import { useAuth } from '../contexts/AuthContext';
+import Assets from './Assets';
+import Transactions from './Transactions';
 
 interface DashboardProps {
   defaultWallet?: string;
@@ -24,12 +25,12 @@ const Dashboard: React.FC<DashboardProps> = ({ defaultWallet = '' }) => {
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6"
     >
-      <Card 
+      <Card
         className="bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm border-none"
         shadow="sm"
       >
@@ -43,8 +44,8 @@ const Dashboard: React.FC<DashboardProps> = ({ defaultWallet = '' }) => {
               <form onSubmit={handleWalletSubmit} className="flex gap-4">
                 <Input
                   classNames={{
-                    input: "bg-transparent",
-                    inputWrapper: "bg-default-100/50",
+                    input: 'bg-transparent',
+                    inputWrapper: 'bg-default-100/50',
                   }}
                   size="lg"
                   variant="bordered"
@@ -57,8 +58,8 @@ const Dashboard: React.FC<DashboardProps> = ({ defaultWallet = '' }) => {
                     </div>
                   }
                 />
-                <Button 
-                  color="primary" 
+                <Button
+                  color="primary"
                   type="submit"
                   className="bg-gradient-to-tr from-primary-500 to-secondary-500"
                 >
@@ -71,7 +72,7 @@ const Dashboard: React.FC<DashboardProps> = ({ defaultWallet = '' }) => {
       </Card>
 
       {(isValidAddress || publicKey) && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
@@ -81,13 +82,13 @@ const Dashboard: React.FC<DashboardProps> = ({ defaultWallet = '' }) => {
             <CardHeader>
               <h2 className="text-xl font-bold">Overview</h2>
             </CardHeader>
-            <CardBody>
-              {/* Add account overview stats */}
-            </CardBody>
+            <CardBody>{/* Add account overview stats */}</CardBody>
           </Card>
 
           <div className="space-y-6">
-            <Transactions walletAddress={publicKey?.toBase58() || walletAddress} />
+            <Transactions
+              walletAddress={publicKey?.toBase58() || walletAddress}
+            />
           </div>
           <div className="space-y-6">
             <Assets walletAddress={publicKey?.toBase58() || walletAddress} />

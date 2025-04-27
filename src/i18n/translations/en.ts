@@ -43,7 +43,7 @@ const translations = {
     perPage: 'Items per page',
     currency: 'Currency',
     totalItems: 'Total {{total}} items',
-  }
+  },
 };
 
 export default translations;

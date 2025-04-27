@@ -1,7 +1,24 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import { Card, CardBody, CardHeader, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Image, Chip, Button, Pagination, Select, SelectItem } from "@nextui-org/react";
-import { useTranslation } from 'react-i18next';
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Chip,
+  Image,
+  Pagination,
+  Select,
+  SelectItem,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+} from '@nextui-org/react';
 import axios from 'axios';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { API_BASE_URL } from '../config/constants';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -26,28 +43,37 @@ const Home: React.FC = () => {
   const { authState, login } = useAuth();
   const { t } = useTranslation();
 
-  const rowsPerPage = useMemo(() => [
-    { label: "20", value: "20" },
-    { label: "40", value: "40" },
-    { label: "60", value: "60" },
-    { label: "80", value: "80" },
-    { label: "100", value: "100" },
-  ], []);
+  const rowsPerPage = useMemo(
+    () => [
+      { label: '20', value: '20' },
+      { label: '40', value: '40' },
+      { label: '60', value: '60' },
+      { label: '80', value: '80' },
+      { label: '100', value: '100' },
+    ],
+    [],
+  );
 
-  const currencies = useMemo(() => [
-    { label: "USD ($)", value: "USD" },
-    { label: "JPY (¥)", value: "JPY" },
-    { label: "CNY (¥)", value: "CNY" },
-  ], []);
+  const currencies = useMemo(
+    () => [
+      { label: 'USD ($)', value: 'USD' },
+      { label: 'JPY (¥)', value: 'JPY' },
+      { label: 'CNY (¥)', value: 'CNY' },
+    ],
+    [],
+  );
 
   const fetchTokens = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axios.post(`${API_BASE_URL}/api/tokens/market-list/`, {
-        page,
-        per_page: perPage,
-        vs_currency: currency
-      });
+      const response = await axios.post(
+        `${API_BASE_URL}/api/tokens/market-list/`,
+        {
+          page,
+          per_page: perPage,
+          vs_currency: currency,
+        },
+      );
       console.log('API response:', response.data);
       setTokens(response.data.tokens || []);
       setTotal(response.data.total);
@@ -83,10 +109,12 @@ const Home: React.FC = () => {
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-xl font-bold">Welcome to Sol Analytics</h2>
-                <p className="text-default-500">Login to manage your tokens and track your portfolio</p>
+                <p className="text-default-500">
+                  Login to manage your tokens and track your portfolio
+                </p>
               </div>
-              <Button 
-                color="primary" 
+              <Button
+                color="primary"
                 onClick={login}
                 className="bg-gradient-to-tr from-primary-500 to-secondary-500"
               >
@@ -117,7 +145,9 @@ const Home: React.FC = () => {
               size="sm"
               label={t('home.currency')}
               selectedKeys={[currency]}
-              onChange={(e) => setCurrency(e.target.value as 'USD' | 'JPY' | 'CNY')}
+              onChange={(e) =>
+                setCurrency(e.target.value as 'USD' | 'JPY' | 'CNY')
+              }
             >
               {currencies.map((c) => (
                 <SelectItem key={c.value} value={c.value}>
@@ -145,24 +175,36 @@ const Home: React.FC = () => {
                     <TableRow key={token.token_address}>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Image src={token.image} alt={token.name} className="w-6 h-6" />
+                          <Image
+                            src={token.image}
+                            alt={token.name}
+                            className="w-6 h-6"
+                          />
                           <div>
                             <p className="font-medium">{token.name}</p>
-                            <p className="text-small text-default-500">{token.symbol.toUpperCase()}</p>
+                            <p className="text-small text-default-500">
+                              {token.symbol.toUpperCase()}
+                            </p>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>{formatPrice(token.price_usd)}</TableCell>
                       <TableCell>
-                        <Chip 
-                          color={token.price_change_24h >= 0 ? "success" : "danger"}
+                        <Chip
+                          color={
+                            token.price_change_24h >= 0 ? 'success' : 'danger'
+                          }
                           variant="flat"
                         >
                           {token.price_change_24h.toFixed(2)}%
                         </Chip>
                       </TableCell>
-                      <TableCell>{formatPrice(token.market_cap / 1e6)}M</TableCell>
-                      <TableCell>{formatPrice(token.volume_24h / 1e6)}M</TableCell>
+                      <TableCell>
+                        {formatPrice(token.market_cap / 1e6)}M
+                      </TableCell>
+                      <TableCell>
+                        {formatPrice(token.volume_24h / 1e6)}M
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
