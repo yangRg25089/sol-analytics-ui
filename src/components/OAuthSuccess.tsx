@@ -1,61 +1,122 @@
 import { Card, CardBody, Spinner } from '@nextui-org/react';
-import { addScaleCorrector } from 'framer-motion';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
-import { useAuth } from '../contexts/AuthContext';
+interface UserData {
+  id: string;
+  email: string;
+  name: string;
+  avatar_url: string;
+  role: string;
+  user_type: string;
+  tokens: {
+    access: string;
+    refresh: string;
+    access_expires_in: number;
+  };
+}
 
 export const OAuthSuccess: React.FC = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const location = useLocation();
-  const { authState } = useAuth();
 
   useEffect(() => {
+    function updateUserInterface(userData: UserData) {
+      // 更新用户名显示
+      const userNameElement = document.querySelector<HTMLElement>('.user-name');
+      if (userNameElement) {
+        userNameElement.textContent = userData.name;
+      }
+
+      // 更新头像显示
+      const avatarElement =
+        document.querySelector<HTMLImageElement>('.user-avatar');
+      if (avatarElement) {
+        avatarElement.src = userData.avatar_url;
+        avatarElement.alt = userData.name;
+      }
+    }
+
+    function handleError(errorCode: string, errorMessage?: string) {
+      // 显示错误消息
+      const errorElement =
+        document.querySelector<HTMLElement>('.error-message');
+      if (errorElement) {
+        errorElement.textContent =
+          errorMessage || 'An error occurred during authentication';
+        errorElement.style.display = 'block';
+      }
+
+      // 重定向到登录页面
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 3000);
+    }
+
     const handleOAuthSuccess = async () => {
       try {
-        // 获取 URL 参数
-        const token = new URLSearchParams(location.search).get('token');
+        // 在 oauth-success 页面
+        const params = new URLSearchParams(location.search);
+        const encodedData = params.get('data');
+        const encodedError = params.get('error');
 
-        if (token) {
-          // 调用后端 API 验证授权码
-          const response = await fetch('/api/auth/google_login', {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          });
+        if (encodedData) {
+          try {
+            // 解码用户信息
+            const userData = JSON.parse(atob(encodedData)) as UserData;
 
-          console.log('Backend API Response:', {
-            status: response.status,
-            ok: response.ok,
-            statusText: response.statusText,
-          });
+            // 存储 token 和用户信息
+            localStorage.setItem('access_token', userData.tokens.access);
+            localStorage.setItem('refresh_token', userData.tokens.refresh);
+            localStorage.setItem(
+              'user_info',
+              JSON.stringify({
+                id: userData.id,
+                email: userData.email,
+                name: userData.name,
+                avatar_url: userData.avatar_url,
+                role: userData.role,
+                user_type: userData.user_type,
+              }),
+            );
 
-          if (response.ok) {
-            const data = await response.json();
-            console.log('OAuth Success - User Data:', data);
-            // 登录成功，跳转到仪表板
-            // navigate('/dashboard');
-          } else {
-            const errorData = await response.json().catch(() => null);
-            console.error('OAuth verification failed:', errorData);
-            // navigate('/');
+            // 存储 token 过期时间
+            localStorage.setItem(
+              'token_expires_at',
+              String(Date.now() + userData.tokens.access_expires_in * 1000),
+            );
+
+            // 更新 UI 显示用户信息
+            updateUserInterface(userData);
+
+            // 重定向到主页或仪表板
+            window.location.href = '/dashboard';
+          } catch (error) {
+            console.error('Error processing user data:', error);
+            handleError('data_processing_error', 'Failed to process user data');
           }
-        } else {
-          console.error('Missing OAuth parameters:', { token });
-          //   navigate('/');
+        } else if (encodedError) {
+          try {
+            // 解码错误信息
+            const errorData = JSON.parse(atob(encodedError));
+            handleError(errorData.code, errorData.message);
+          } catch (error) {
+            console.error('Error processing error data:', error);
+            handleError(
+              'error_processing_error',
+              'Failed to process error data',
+            );
+          }
         }
       } catch (error) {
         console.error('OAuth error:', error);
-        // navigate('/');
+        handleError('oauth_error', 'Authentication failed');
       }
     };
 
     handleOAuthSuccess();
-  }, [location, navigate]);
+  }, [location]);
 
   return (
     <div className="flex items-center justify-center min-h-screen">

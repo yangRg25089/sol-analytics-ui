@@ -1,16 +1,10 @@
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Chip,
-  Image,
-} from '@nextui-org/react';
+import { Card, CardBody, CardHeader, Chip, Image } from '@nextui-org/react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { API_BASE_URL } from '../config/constants';
 import { NFTMetadata, PerformanceMetrics, TokenBalance } from '../types/solana';
 import { TokenFavorite } from './TokenFavorite';
 import { TokenTransfer } from './TokenTransfer';
@@ -32,9 +26,9 @@ const Assets: React.FC<AssetsProps> = ({ walletAddress }) => {
     const fetchAssets = async () => {
       try {
         const [tokensRes, nftsRes, favoritesRes] = await Promise.all([
-          axios.get(`/api/tokens/${walletAddress}`),
-          axios.get(`/api/nfts/${walletAddress}`),
-          axios.get('/api/tokens/favorites'),
+          axios.get(`${API_BASE_URL}/api/tokens/${walletAddress}`),
+          axios.get(`${API_BASE_URL}/api/nfts/${walletAddress}`),
+          axios.get(`${API_BASE_URL}/api/tokens/favorites`),
         ]);
         setTokens(tokensRes.data);
         setNfts(nftsRes.data);
@@ -66,7 +60,9 @@ const Assets: React.FC<AssetsProps> = ({ walletAddress }) => {
   const handleTransfer = async () => {
     // 重新获取代币列表以更新余额
     try {
-      const tokensRes = await axios.get(`/api/tokens/${walletAddress}`);
+      const tokensRes = await axios.get(
+        `${API_BASE_URL}/api/tokens/${walletAddress}`,
+      );
       setTokens(tokensRes.data);
     } catch (err) {
       console.error('Error refreshing tokens:', err);

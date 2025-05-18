@@ -5,9 +5,9 @@ import {
   CardHeader,
   Chip,
   Image,
-  Pagination,
   Select,
   SelectItem,
+  Spinner,
   Table,
   TableBody,
   TableCell,
@@ -16,7 +16,7 @@ import {
   TableRow,
 } from '@nextui-org/react';
 import axios from 'axios';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { API_BASE_URL } from '../config/constants';
@@ -35,71 +35,83 @@ interface TokenMarketData {
 
 const Home: React.FC = () => {
   const [tokens, setTokens] = useState<TokenMarketData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(20);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [currency, setCurrency] = useState<'USD' | 'JPY' | 'CNY'>('USD');
-  const [total, setTotal] = useState(0);
+  const tableRef = useRef<HTMLDivElement>(null);
   const { authState, login } = useAuth();
   const { t } = useTranslation();
 
-  const rowsPerPage = useMemo(
-    () => [
-      { label: '20', value: '20' },
-      { label: '40', value: '40' },
-      { label: '60', value: '60' },
-      { label: '80', value: '80' },
-      { label: '100', value: '100' },
-    ],
-    [],
-  );
+  const currencies = [
+    { label: 'USD ($)', value: 'USD' },
+    { label: 'JPY (¥)', value: 'JPY' },
+    { label: 'CNY (¥)', value: 'CNY' },
+  ];
 
-  const currencies = useMemo(
-    () => [
-      { label: 'USD ($)', value: 'USD' },
-      { label: 'JPY (¥)', value: 'JPY' },
-      { label: 'CNY (¥)', value: 'CNY' },
-    ],
-    [],
+  const fetchTokens = useCallback(
+    async (offset: number = 0) => {
+      if (loading && offset > 0) return;
+      try {
+        setLoading(true);
+        const response = await axios.post(
+          `${API_BASE_URL}/api/tokens/market-list/`,
+          {
+            offset,
+            limit: 10,
+            vs_currency: currency,
+          },
+        );
+        const newTokens: TokenMarketData[] = response.data.tokens || [];
+        console.log('API Response:', response.data);
+        console.log('New Tokens:', newTokens);
+        if (newTokens.length === 0) {
+          setHasMore(false);
+        } else {
+          setTokens((prev) => {
+            const updated = offset === 0 ? newTokens : [...prev, ...newTokens];
+            console.log('Updated Tokens:', updated);
+            return updated;
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching tokens:', error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [loading, currency],
   );
-
-  const fetchTokens = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await axios.post(
-        `${API_BASE_URL}/api/tokens/market-list/`,
-        {
-          page,
-          per_page: perPage,
-          vs_currency: currency,
-        },
-      );
-      console.log('API response:', response.data);
-      setTokens(response.data.tokens || []);
-      setTotal(response.data.total);
-    } catch (error) {
-      console.error('Error fetching tokens:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, perPage, currency]);
 
   useEffect(() => {
-    fetchTokens();
-  }, [fetchTokens]);
+    setHasMore(true);
+    fetchTokens(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currency]);
 
-  const formatPrice = (price_usd: number) => {
+  const handleScroll = useCallback(
+    (e: React.UIEvent<HTMLDivElement>) => {
+      const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+      const bottomDist = scrollHeight - scrollTop - clientHeight;
+      if (bottomDist < 100 && !loading && hasMore) {
+        fetchTokens(tokens.length);
+      }
+    },
+    [loading, hasMore, tokens.length, fetchTokens],
+  );
+
+  const formatPrice = (price: number) => {
+    if (isNaN(price)) return '-';
     switch (currency) {
       case 'USD':
-        return `$${price_usd.toFixed(2)}`;
+        return `$${price.toFixed(2)}`;
       case 'JPY':
-        return `¥${price_usd.toFixed(0)}`;
+        return `¥${price.toFixed(0)}`;
       case 'CNY':
-        return `¥${price_usd.toFixed(2)}`;
+        return `¥${price.toFixed(2)}`;
+      default:
+        return price.toString();
     }
   };
-
-  if (loading || !Array.isArray(tokens)) return <div>Loading...</div>;
 
   return (
     <div className="space-y-6">
@@ -115,7 +127,7 @@ const Home: React.FC = () => {
               </div>
               <Button
                 color="primary"
-                onClick={login}
+                onPress={login}
                 className="bg-gradient-to-tr from-primary-500 to-secondary-500"
               >
                 Login with Google
@@ -128,100 +140,84 @@ const Home: React.FC = () => {
       <Card className="w-full">
         <CardHeader className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">{t('home.title')}</h1>
-          <div className="flex gap-4">
-            <Select
-              size="sm"
-              label={t('home.perPage')}
-              selectedKeys={[perPage.toString()]}
-              onChange={(e) => setPerPage(Number(e.target.value))}
-            >
-              {rowsPerPage.map((row) => (
-                <SelectItem key={row.value} value={row.value}>
-                  {row.label}
-                </SelectItem>
-              ))}
-            </Select>
-            <Select
-              size="sm"
-              label={t('home.currency')}
-              selectedKeys={[currency]}
-              onChange={(e) =>
-                setCurrency(e.target.value as 'USD' | 'JPY' | 'CNY')
-              }
-            >
-              {currencies.map((c) => (
-                <SelectItem key={c.value} value={c.value}>
-                  {c.label}
-                </SelectItem>
-              ))}
-            </Select>
-          </div>
+          <Select
+            size="sm"
+            label={t('home.currency')}
+            selectedKeys={[currency]}
+            onChange={(e) => setCurrency(e.target.value as any)}
+          >
+            {currencies.map((c) => (
+              <SelectItem key={c.value} value={c.value}>
+                {c.label}
+              </SelectItem>
+            ))}
+          </Select>
         </CardHeader>
         <CardBody>
-          {tokens.length === 0 ? (
-            <div className="text-center py-4">No tokens found</div>
-          ) : (
-            <>
-              <Table aria-label="Market tokens">
-                <TableHeader>
-                  <TableColumn>TOKEN</TableColumn>
-                  <TableColumn>PRICE</TableColumn>
-                  <TableColumn>24H CHANGE</TableColumn>
-                  <TableColumn>MARKET CAP</TableColumn>
-                  <TableColumn>VOLUME</TableColumn>
-                </TableHeader>
-                <TableBody>
-                  {tokens.map((token) => (
-                    <TableRow key={token.token_address}>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Image
-                            src={token.image}
-                            alt={token.name}
-                            className="w-6 h-6"
-                          />
-                          <div>
-                            <p className="font-medium">{token.name}</p>
-                            <p className="text-small text-default-500">
-                              {token.symbol.toUpperCase()}
-                            </p>
-                          </div>
+          <div
+            ref={tableRef}
+            className="relative"
+            onScroll={handleScroll}
+            style={{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }}
+          >
+            <Table aria-label="Market tokens">
+              <TableHeader>
+                <TableColumn>TOKEN</TableColumn>
+                <TableColumn>PRICE</TableColumn>
+                <TableColumn>24H CHANGE</TableColumn>
+                <TableColumn>MARKET CAP</TableColumn>
+                <TableColumn>VOLUME</TableColumn>
+              </TableHeader>
+              <TableBody>
+                {tokens.map((token) => (
+                  <TableRow key={token.token_address}>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Image
+                          src={token.image}
+                          alt={token.name}
+                          className="w-6 h-6"
+                        />
+                        <div>
+                          <p className="font-medium">{token.name}</p>
+                          <p className="text-small text-default-500">
+                            {token.symbol.toUpperCase()}
+                          </p>
                         </div>
-                      </TableCell>
-                      <TableCell>{formatPrice(token.price_usd)}</TableCell>
-                      <TableCell>
-                        <Chip
-                          color={
-                            token.price_change_24h >= 0 ? 'success' : 'danger'
-                          }
-                          variant="flat"
-                        >
-                          {token.price_change_24h.toFixed(2)}%
-                        </Chip>
-                      </TableCell>
-                      <TableCell>
-                        {formatPrice(token.market_cap / 1e6)}M
-                      </TableCell>
-                      <TableCell>
-                        {formatPrice(token.volume_24h / 1e6)}M
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              <div className="flex justify-between items-center mt-4">
-                <span className="text-small text-default-400">
-                  {t('home.totalItems', { total })}
-                </span>
-                <Pagination
-                  total={Math.ceil(total / perPage)}
-                  initialPage={1}
-                  page={page}
-                  onChange={setPage}
-                />
+                      </div>
+                    </TableCell>
+                    <TableCell>{formatPrice(token.price_usd)}</TableCell>
+                    <TableCell>
+                      <Chip
+                        variant="flat"
+                        color={
+                          token.price_change_24h >= 0 ? 'success' : 'danger'
+                        }
+                      >
+                        {token.price_change_24h.toFixed(2)}%
+                      </Chip>
+                    </TableCell>
+                    <TableCell>
+                      {formatPrice(token.market_cap / 1e6)}M
+                    </TableCell>
+                    <TableCell>
+                      {formatPrice(token.volume_24h / 1e6)}M
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            {loading && (
+              <div className="flex justify-center py-4">
+                <Spinner size="sm" />
               </div>
-            </>
-          )}
+            )}
+            {!hasMore && (
+              <div className="text-center py-4 text-default-500">
+                No more tokens
+              </div>
+            )}
+          </div>
         </CardBody>
       </Card>
     </div>

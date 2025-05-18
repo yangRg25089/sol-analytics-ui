@@ -6,12 +6,27 @@ import { Chart, registerables } from 'chart.js';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+  RouterProvider,
+} from 'react-router-dom';
 
 import App from './App';
 import { AuthProvider } from './contexts/AuthContext';
 
 Chart.register(...registerables);
+
+const router = createBrowserRouter(
+  createRoutesFromElements(<Route path="/*" element={<App />} />),
+  {
+    basename: '/',
+    future: {
+      v7_relativeSplatPath: true,
+    },
+  },
+);
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
@@ -19,14 +34,12 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <NextThemesProvider attribute="class" defaultTheme="dark">
-        <NextUIProvider>
-          <AuthProvider>
-            <App />
-          </AuthProvider>
-        </NextUIProvider>
-      </NextThemesProvider>
-    </BrowserRouter>
+    <NextThemesProvider attribute="class" defaultTheme="dark">
+      <NextUIProvider>
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
+      </NextUIProvider>
+    </NextThemesProvider>
   </React.StrictMode>,
 );

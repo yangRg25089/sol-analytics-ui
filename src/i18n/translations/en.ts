@@ -35,7 +35,7 @@ const translations = {
     assets: 'Assets',
   },
   home: {
-    title: 'Top 20 Market Tokens',
+    title: 'Market Tokens',
     marketCap: 'Market Cap',
     volume: '24h Volume',
     price: 'Price',

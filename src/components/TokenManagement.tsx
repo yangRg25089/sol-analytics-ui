@@ -17,8 +17,11 @@ import {
   Textarea,
   useDisclosure,
 } from '@nextui-org/react';
+import axios from 'axios';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { API_BASE_URL } from '../config/constants';
 
 interface Token {
   id: string;
@@ -41,21 +44,14 @@ export const TokenManagement: React.FC = () => {
 
   const handleCreateToken = async () => {
     try {
-      // TODO: 调用后端 API 创建代币
-      const response = await fetch('/api/tokens/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newToken),
-      });
-
-      if (response.ok) {
-        const token = await response.json();
-        setTokens([...tokens, token]);
-        onClose();
-        setNewToken({ name: '', symbol: '', totalSupply: 0 });
-      }
+      const response = await axios.post(
+        `${API_BASE_URL}/api/tokens/`,
+        newToken,
+      );
+      const token = response.data;
+      setTokens([...tokens, token]);
+      onClose();
+      setNewToken({ name: '', symbol: '', totalSupply: 0 });
     } catch (error) {
       console.error('Error creating token:', error);
     }
@@ -63,22 +59,14 @@ export const TokenManagement: React.FC = () => {
 
   const handleMintToken = async (tokenId: string, amount: number) => {
     try {
-      // TODO: 调用后端 API 增发代币
-      const response = await fetch(`/api/tokens/${tokenId}/manage/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ action: 'mint', amount }),
-      });
-
-      if (response.ok) {
-        // 更新代币列表
-        const updatedToken = await response.json();
-        setTokens(
-          tokens.map((token) => (token.id === tokenId ? updatedToken : token)),
-        );
-      }
+      const response = await axios.post(
+        `${API_BASE_URL}/api/tokens/${tokenId}/manage/`,
+        { action: 'mint', amount },
+      );
+      const updatedToken = response.data;
+      setTokens(
+        tokens.map((token) => (token.id === tokenId ? updatedToken : token)),
+      );
     } catch (error) {
       console.error('Error minting token:', error);
     }
@@ -86,22 +74,14 @@ export const TokenManagement: React.FC = () => {
 
   const handleBurnToken = async (tokenId: string, amount: number) => {
     try {
-      // TODO: 调用后端 API 销毁代币
-      const response = await fetch(`/api/tokens/${tokenId}/manage/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ action: 'burn', amount }),
-      });
-
-      if (response.ok) {
-        // 更新代币列表
-        const updatedToken = await response.json();
-        setTokens(
-          tokens.map((token) => (token.id === tokenId ? updatedToken : token)),
-        );
-      }
+      const response = await axios.post(
+        `${API_BASE_URL}/api/tokens/${tokenId}/manage/`,
+        { action: 'burn', amount },
+      );
+      const updatedToken = response.data;
+      setTokens(
+        tokens.map((token) => (token.id === tokenId ? updatedToken : token)),
+      );
     } catch (error) {
       console.error('Error burning token:', error);
     }

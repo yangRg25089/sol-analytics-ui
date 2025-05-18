@@ -1,6 +1,9 @@
 import { Button } from '@nextui-org/react';
+import axios from 'axios';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { API_BASE_URL } from '../config/constants';
 
 interface TokenFavoriteProps {
   tokenId: string;
@@ -18,16 +21,10 @@ export const TokenFavorite: React.FC<TokenFavoriteProps> = ({
   const handleToggleFavorite = async () => {
     try {
       const endpoint = isFavorite ? 'unfavorite' : 'favorite';
-      const response = await fetch(`/api/tokens/${tokenId}/${endpoint}/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        onToggleFavorite(tokenId);
-      }
+      const response = await axios.post(
+        `${API_BASE_URL}/api/tokens/${tokenId}/${endpoint}/`,
+      );
+      onToggleFavorite(tokenId);
     } catch (error) {
       console.error('Error toggling favorite:', error);
     }

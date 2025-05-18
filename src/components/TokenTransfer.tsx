@@ -10,8 +10,11 @@ import {
   ModalHeader,
   useDisclosure,
 } from '@nextui-org/react';
+import axios from 'axios';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { API_BASE_URL } from '../config/constants';
 
 interface TokenTransferProps {
   tokenId: string;
@@ -33,22 +36,16 @@ export const TokenTransfer: React.FC<TokenTransferProps> = ({
 
   const handleTransfer = async () => {
     try {
-      const response = await fetch(`/api/tokens/${tokenId}/transfer/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const response = await axios.post(
+        `${API_BASE_URL}/api/tokens/${tokenId}/transfer/`,
+        {
           toAddress: transferData.toAddress,
           amount: parseFloat(transferData.amount),
-        }),
-      });
-
-      if (response.ok) {
-        onTransfer();
-        onClose();
-        setTransferData({ toAddress: '', amount: '' });
-      }
+        },
+      );
+      onTransfer();
+      onClose();
+      setTransferData({ toAddress: '', amount: '' });
     } catch (error) {
       console.error('Error transferring token:', error);
     }
