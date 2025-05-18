@@ -17,9 +17,6 @@
     "@solana/wallet-adapter-react-ui": "^0.9.34",
     "@solana/wallet-adapter-wallets": "^0.19.23",
     "@solana/web3.js": "^1.87.6",
-    "@types/react-router-dom": "^5.3.3",
-    "ajv": "^8.12.0",
-    "ajv-keywords": "^5.1.0",
     "axios": "^1.4.0",
     "chart.js": "^4.3.0",
     "date-fns": "^2.30.0",
@@ -32,7 +29,6 @@
     "react-i18next": "^13.0.0",
     "react-router-dom": "^6.22.0",
     "react-scripts": "^5.0.1",
-    "schema-utils": "^4.2.0",
     "zustand": "^5.0.3"
   },
   "devDependencies": {
@@ -82,7 +78,5 @@
       "last 1 safari version"
     ]
   },
-  "source-map-loader": {
-    "skipBuildingSourceMap": true
-  }
+  "source-map-loader": {}
 }

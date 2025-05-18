@@ -1,7 +1,10 @@
 import { Card, CardBody, Spinner } from '@nextui-org/react';
+import axios from 'axios';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
+
+import { API_BASE_URL } from '../config/constants';
 
 interface UserData {
   id: string;
@@ -65,19 +68,30 @@ export const OAuthSuccess: React.FC = () => {
           try {
             // 解码用户信息
             const userData = JSON.parse(atob(encodedData)) as UserData;
+            console.log('userData', userData);
 
-            // 存储 token 和用户信息
+            // 存储 token
             localStorage.setItem('access_token', userData.tokens.access);
-            localStorage.setItem('refresh_token', userData.tokens.refresh);
+
+            // 获取用户信息
+            const response = await axios.get(`${API_BASE_URL}/api/auth/me/`, {
+              headers: {
+                Authorization: `Bearer ${userData.tokens.access}`,
+                'Content-Type': 'application/json',
+              },
+            });
+            console.log('response', response);
+
+            // 存储用户信息
             localStorage.setItem(
               'user_info',
               JSON.stringify({
-                id: userData.id,
-                email: userData.email,
-                name: userData.name,
-                avatar_url: userData.avatar_url,
-                role: userData.role,
-                user_type: userData.user_type,
+                id: response.id,
+                email: response.email,
+                name: response.name,
+                avatar_url: response.avatar_url,
+                role: response.role,
+                user_type: response.user_type,
               }),
             );
 
@@ -91,7 +105,7 @@ export const OAuthSuccess: React.FC = () => {
             updateUserInterface(userData);
 
             // 重定向到主页或仪表板
-            window.location.href = '/dashboard';
+            // window.location.href = '/dashboard';
           } catch (error) {
             console.error('Error processing user data:', error);
             handleError('data_processing_error', 'Failed to process user data');
@@ -120,10 +134,13 @@ export const OAuthSuccess: React.FC = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <Card className="w-[400px]">
+      <Card className="max-w-md w-full">
         <CardBody className="flex flex-col items-center justify-center p-8">
           <Spinner size="lg" />
-          <p className="mt-4 text-lg">{t('auth.verifying')}</p>
+          <p className="mt-4 text-center text-default-500">
+            {t('auth.processing')}
+          </p>
+          <p className="error-message mt-4 text-center text-danger hidden"></p>
         </CardBody>
       </Card>
     </div>
