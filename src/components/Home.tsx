@@ -4,6 +4,10 @@ import {
   CardBody,
   CardHeader,
   Chip,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
   Image,
   Select,
   SelectItem,
@@ -14,6 +18,7 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
+  User,
 } from '@nextui-org/react';
 import axios from 'axios';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -21,16 +26,15 @@ import { useTranslation } from 'react-i18next';
 
 import { API_BASE_URL } from '../config/constants';
 import { useAuth } from '../contexts/AuthContext';
+import { TokenMarketData } from '../types/token';
 
-interface TokenMarketData {
-  token_address: string;
-  symbol: string;
+interface UserInfo {
+  id: string;
+  email: string;
   name: string;
-  image: string;
-  price_usd: number;
-  market_cap: number;
-  price_change_24h: number;
-  volume_24h: number;
+  avatar_url: string;
+  role: string;
+  user_type: string;
 }
 
 const Home: React.FC = () => {
@@ -38,9 +42,37 @@ const Home: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [currency, setCurrency] = useState<'USD' | 'JPY' | 'CNY'>('USD');
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const tableRef = useRef<HTMLDivElement>(null);
   const { authState, login } = useAuth();
   const { t } = useTranslation();
+
+  // 初始化检查登录状态
+  useEffect(() => {
+    setIsAuthenticated(checkAuthStatus());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // 只在组件挂载时执行一次
+
+  const checkAuthStatus = () => {
+    const storedUserInfo = localStorage.getItem('user_info');
+    const tokenExpiresAt = localStorage.getItem('token_expires_at');
+    console.log('storedUserInfo)', storedUserInfo);
+    console.log('tokenExpiresAt)', tokenExpiresAt);
+
+    if (!storedUserInfo || !tokenExpiresAt) {
+      return false;
+    }
+    const isExpired = Date.now() >= parseInt(tokenExpiresAt, 10);
+    if (isExpired) {
+      handleLogout();
+      return false;
+    }
+    setUserInfo(JSON.parse(storedUserInfo));
+    console.log('JSON.parse(storedUserInfo)', JSON.parse(storedUserInfo));
+
+    return true;
+  };
 
   const currencies = [
     { label: 'USD ($)', value: 'USD' },
@@ -62,16 +94,12 @@ const Home: React.FC = () => {
           },
         );
         const newTokens: TokenMarketData[] = response.data.tokens || [];
-        console.log('API Response:', response.data);
-        console.log('New Tokens:', newTokens);
         if (newTokens.length === 0) {
           setHasMore(false);
         } else {
-          setTokens((prev) => {
-            const updated = offset === 0 ? newTokens : [...prev, ...newTokens];
-            console.log('Updated Tokens:', updated);
-            return updated;
-          });
+          setTokens((prev) =>
+            offset === 0 ? newTokens : [...prev, ...newTokens],
+          );
         }
       } catch (error) {
         console.error('Error fetching tokens:', error);
@@ -85,14 +113,16 @@ const Home: React.FC = () => {
   useEffect(() => {
     setHasMore(true);
     fetchTokens(0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currency]);
+  }, [currency, fetchTokens]);
 
   const handleScroll = useCallback(
     (e: React.UIEvent<HTMLDivElement>) => {
       const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-      const bottomDist = scrollHeight - scrollTop - clientHeight;
-      if (bottomDist < 100 && !loading && hasMore) {
+      if (
+        scrollHeight - scrollTop - clientHeight < 100 &&
+        !loading &&
+        hasMore
+      ) {
         fetchTokens(tokens.length);
       }
     },
@@ -113,9 +143,16 @@ const Home: React.FC = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('user_info');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('token_expires_at');
+    window.location.reload();
+  };
+
   return (
     <div className="space-y-6">
-      {!authState.isAuthenticated && (
+      {!isAuthenticated ? (
         <Card className="bg-gradient-to-r from-primary-900/20 to-secondary-900/20">
           <CardBody>
             <div className="flex justify-between items-center">
@@ -132,6 +169,52 @@ const Home: React.FC = () => {
               >
                 Login with Google
               </Button>
+            </div>
+          </CardBody>
+        </Card>
+      ) : (
+        <Card className="bg-gradient-to-r from-primary-900/20 to-secondary-900/20">
+          <CardBody>
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-xl font-bold">Welcome to Sol Analytics</h2>
+                <p className="text-default-500">
+                  Manage your tokens and track your portfolio
+                </p>
+              </div>
+              <Dropdown placement="bottom-end">
+                <DropdownTrigger>
+                  <User
+                    as="button"
+                    avatarProps={{
+                      isBordered: true,
+                      src: userInfo?.avatar_url,
+                    }}
+                    className="transition-transform"
+                    description={userInfo?.email}
+                    name={userInfo?.name}
+                  />
+                </DropdownTrigger>
+                <DropdownMenu aria-label="User Info">
+                  <DropdownItem key="profile" className="h-14 gap-2">
+                    <p className="font-semibold">Signed in as</p>
+                    <p className="font-semibold">{userInfo?.email}</p>
+                  </DropdownItem>
+                  <DropdownItem key="role">
+                    <p className="font-semibold">Role: {userInfo?.role}</p>
+                  </DropdownItem>
+                  <DropdownItem key="type">
+                    <p className="font-semibold">Type: {userInfo?.user_type}</p>
+                  </DropdownItem>
+                  <DropdownItem
+                    key="logout"
+                    color="danger"
+                    onClick={handleLogout}
+                  >
+                    Log Out
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
             </div>
           </CardBody>
         </Card>

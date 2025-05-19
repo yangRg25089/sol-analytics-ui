@@ -105,7 +105,7 @@ export const OAuthSuccess: React.FC = () => {
             updateUserInterface(userData);
 
             // 重定向到主页或仪表板
-            // window.location.href = '/dashboard';
+            window.location.href = '/';
           } catch (error) {
             console.error('Error processing user data:', error);
             handleError('data_processing_error', 'Failed to process user data');
