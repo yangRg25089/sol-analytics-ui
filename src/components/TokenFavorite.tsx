@@ -37,7 +37,7 @@ export const TokenFavorite: React.FC<TokenFavoriteProps> = ({
       variant={isFavorite ? 'solid' : 'bordered'}
       onPress={handleToggleFavorite}
     >
-      {isFavorite ? t('token.favorite') : t('token.unfavorite')}
+      {isFavorite ? t('assets.favorite') : t('assets.unfavorite')}
     </Button>
   );
 };

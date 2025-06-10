@@ -54,7 +54,7 @@ export const TokenTransfer: React.FC<TokenTransferProps> = ({
   return (
     <>
       <Button color="primary" onPress={onOpen}>
-        {t('token.transfer')}
+        {t('assets.transfer')}
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -63,7 +63,7 @@ export const TokenTransfer: React.FC<TokenTransferProps> = ({
           <ModalBody>
             <div className="mb-4">
               <p className="text-sm text-gray-500">
-                {t('token.balance')}: {balance}
+                {t('assets.balance')}: {balance}
               </p>
             </div>
             <Input
