@@ -8,6 +8,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Spinner,
   useDisclosure,
 } from '@nextui-org/react';
 import axios from 'axios';
@@ -33,9 +34,27 @@ export const TokenTransfer: React.FC<TokenTransferProps> = ({
     toAddress: '',
     amount: '',
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleTransfer = async () => {
+    setIsLoading(true);
+    setError(null);
     try {
+      // 在开发环境中使用模拟数据
+      if (process.env.NODE_ENV === 'development') {
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // 模拟网络延迟
+        console.log('Transfer simulation:', {
+          tokenId,
+          toAddress: transferData.toAddress,
+          amount: parseFloat(transferData.amount),
+        });
+        onTransfer();
+        onClose();
+        setTransferData({ toAddress: '', amount: '' });
+        return;
+      }
+
       const response = await axios.post(
         `${API_BASE_URL}/api/tokens/${tokenId}/transfer/`,
         {
@@ -48,6 +67,9 @@ export const TokenTransfer: React.FC<TokenTransferProps> = ({
       setTransferData({ toAddress: '', amount: '' });
     } catch (error) {
       console.error('Error transferring token:', error);
+      setError(error instanceof Error ? error.message : t('common.error'));
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -62,8 +84,8 @@ export const TokenTransfer: React.FC<TokenTransferProps> = ({
           <ModalHeader>{t('token.transferTitle')}</ModalHeader>
           <ModalBody>
             <div className="mb-4">
-              <p className="text-sm text-gray-500">
-                {t('assets.balance')}: {balance}
+              <p className="text-sm text-default-400">
+                {t('assets.total')}: {balance.toFixed(4)}
               </p>
             </div>
             <Input
@@ -72,7 +94,9 @@ export const TokenTransfer: React.FC<TokenTransferProps> = ({
               onChange={(e) =>
                 setTransferData({ ...transferData, toAddress: e.target.value })
               }
-              placeholder="Enter Solana address"
+              placeholder={t('token.enterAddress')}
+              className="mb-4"
+              isDisabled={isLoading}
             />
             <Input
               type="number"
@@ -81,19 +105,38 @@ export const TokenTransfer: React.FC<TokenTransferProps> = ({
               onChange={(e) =>
                 setTransferData({ ...transferData, amount: e.target.value })
               }
-              placeholder="Enter amount"
+              placeholder={t('token.enterAmount')}
+              min={0}
+              max={balance}
+              step="0.0001"
+              isDisabled={isLoading}
             />
+            {error && <p className="text-danger text-sm mt-2">{error}</p>}
           </ModalBody>
           <ModalFooter>
-            <Button color="danger" variant="light" onPress={onClose}>
+            <Button
+              color="danger"
+              variant="light"
+              onPress={onClose}
+              isDisabled={isLoading}
+            >
               {t('common.cancel')}
             </Button>
             <Button
               color="primary"
               onPress={handleTransfer}
-              isDisabled={!transferData.toAddress || !transferData.amount}
+              isDisabled={
+                !transferData.toAddress || !transferData.amount || isLoading
+              }
             >
-              {t('token.confirmTransfer')}
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <Spinner size="sm" color="white" />
+                  {t('common.processing')}
+                </div>
+              ) : (
+                t('token.confirmTransfer')
+              )}
             </Button>
           </ModalFooter>
         </ModalContent>
