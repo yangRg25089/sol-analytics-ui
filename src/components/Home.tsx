@@ -1,13 +1,8 @@
 import {
-  Button,
   Card,
   CardBody,
   CardHeader,
   Chip,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
   Image,
   Select,
   SelectItem,
@@ -18,61 +13,21 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
-  User,
 } from '@nextui-org/react';
 import axios from 'axios';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { API_BASE_URL } from '../config/constants';
-import { useAuth } from '../contexts/AuthContext';
 import { TokenMarketData } from '../types/market';
-
-interface UserInfo {
-  id: string;
-  email: string;
-  name: string;
-  avatar_url: string;
-  role: string;
-  user_type: string;
-}
 
 const Home: React.FC = () => {
   const [tokens, setTokens] = useState<TokenMarketData[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [currency, setCurrency] = useState<'USD' | 'JPY' | 'CNY'>('USD');
-  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const tableRef = useRef<HTMLDivElement>(null);
-  const { authState, login } = useAuth();
   const { t } = useTranslation();
-
-  // 初始化检查登录状态
-  useEffect(() => {
-    setIsAuthenticated(checkAuthStatus());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // 只在组件挂载时执行一次
-
-  const checkAuthStatus = () => {
-    const storedUserInfo = localStorage.getItem('user_info');
-    const tokenExpiresAt = localStorage.getItem('token_expires_at');
-    console.log('storedUserInfo)', storedUserInfo);
-    console.log('tokenExpiresAt)', tokenExpiresAt);
-
-    if (!storedUserInfo || !tokenExpiresAt) {
-      return false;
-    }
-    const isExpired = Date.now() >= parseInt(tokenExpiresAt, 10);
-    if (isExpired) {
-      handleLogout();
-      return false;
-    }
-    setUserInfo(JSON.parse(storedUserInfo));
-    console.log('JSON.parse(storedUserInfo)', JSON.parse(storedUserInfo));
-
-    return true;
-  };
 
   const currencies = [
     { label: 'USD ($)', value: 'USD' },
@@ -119,7 +74,7 @@ const Home: React.FC = () => {
   const handleScroll = useCallback(
     (e: React.UIEvent<HTMLDivElement>) => {
       const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-      const scrollThreshold = 50; // 降低触发阈值
+      const scrollThreshold = 50;
 
       if (
         scrollHeight - scrollTop - clientHeight < scrollThreshold &&
@@ -146,109 +101,40 @@ const Home: React.FC = () => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('user_info');
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('token_expires_at');
-    window.location.reload();
-  };
-
   return (
     <div className="space-y-6">
-      {!isAuthenticated ? (
-        <Card className="bg-gradient-to-r from-primary-900/20 to-secondary-900/20">
-          <CardBody>
-            <div className="flex flex-col items-center gap-4">
-              <div className="flex justify-between items-center w-full">
-                <div className="flex items-center gap-4">
-                  <h2 className="text-xl font-bold">{t('home.welcome')}</h2>
-                  <p className="text-default-500">{t('home.loginPrompt')}</p>
-                </div>
-                <Button
-                  color="primary"
-                  onPress={login}
-                  className="bg-gradient-to-tr from-primary-500 to-secondary-500"
-                >
-                  {t('auth.loginWithGoogle')}
-                </Button>
+      <Card className="bg-gradient-to-r from-primary-900/20 to-secondary-900/20">
+        <CardBody>
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex justify-between items-center w-full">
+              <div className="flex items-center gap-4">
+                <h2 className="text-xl font-bold">{t('home.title')}</h2>
+                <p className="text-default-500">{t('home.subtitle')}</p>
               </div>
+              <Select
+                size="sm"
+                label={t('home.currency')}
+                selectedKeys={[currency]}
+                onChange={(e) => setCurrency(e.target.value as any)}
+                className="w-32"
+                classNames={{
+                  label: 'text-default-500',
+                  value: 'text-default-900',
+                  trigger: 'bg-default-100/50',
+                }}
+              >
+                {currencies.map((c) => (
+                  <SelectItem key={c.value} value={c.value}>
+                    {c.label}
+                  </SelectItem>
+                ))}
+              </Select>
             </div>
-          </CardBody>
-        </Card>
-      ) : (
-        <Card className="bg-gradient-to-r from-primary-900/20 to-secondary-900/20">
-          <CardBody>
-            <div className="flex flex-col items-center gap-4">
-              <div className="flex justify-between items-center w-full">
-                <div className="flex items-center gap-4">
-                  <h2 className="text-xl font-bold">{t('home.welcome')}</h2>
-                  <p className="text-default-500">{t('home.managePrompt')}</p>
-                </div>
-                <Dropdown placement="bottom-end">
-                  <DropdownTrigger>
-                    <User
-                      as="button"
-                      avatarProps={{
-                        isBordered: true,
-                        src: userInfo?.avatar_url,
-                      }}
-                      className="transition-transform"
-                      description={userInfo?.email}
-                      name={userInfo?.name}
-                    />
-                  </DropdownTrigger>
-                  <DropdownMenu aria-label="User Info">
-                    <DropdownItem key="profile" className="h-14 gap-2">
-                      <p className="font-semibold">{t('auth.signedInAs')}</p>
-                      <p className="font-semibold">{userInfo?.email}</p>
-                    </DropdownItem>
-                    <DropdownItem key="role">
-                      <p className="font-semibold">
-                        {t('auth.role')}: {userInfo?.role}
-                      </p>
-                    </DropdownItem>
-                    <DropdownItem key="type">
-                      <p className="font-semibold">
-                        {t('auth.type')}: {userInfo?.user_type}
-                      </p>
-                    </DropdownItem>
-                    <DropdownItem
-                      key="logout"
-                      color="danger"
-                      onClick={handleLogout}
-                    >
-                      {t('auth.logout')}
-                    </DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </div>
-            </div>
-          </CardBody>
-        </Card>
-      )}
+          </div>
+        </CardBody>
+      </Card>
 
       <Card className="w-full">
-        <CardHeader className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">{t('home.title')}</h1>
-          <Select
-            size="sm"
-            label={t('home.currency')}
-            selectedKeys={[currency]}
-            onChange={(e) => setCurrency(e.target.value as any)}
-            className="w-32"
-            classNames={{
-              label: 'text-default-500',
-              value: 'text-default-900',
-              trigger: 'bg-default-100/50',
-            }}
-          >
-            {currencies.map((c) => (
-              <SelectItem key={c.value} value={c.value}>
-                {c.label}
-              </SelectItem>
-            ))}
-          </Select>
-        </CardHeader>
         <CardBody>
           <div className="flex flex-col items-center gap-4">
             <div

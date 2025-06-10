@@ -1,44 +1,28 @@
-import {
-  Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-} from '@nextui-org/react';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { SUPPORTED_LANGUAGES } from '../config/constants';
+import CommonSelector from './CommonSelector';
 
 const LanguageSelector: React.FC = () => {
   const { i18n, t } = useTranslation();
 
-  useEffect(() => {
-    const savedLanguage = localStorage.getItem('preferredLanguage');
-    if (savedLanguage && savedLanguage !== i18n.language) {
-      i18n.changeLanguage(savedLanguage);
-    }
-  }, [i18n]);
-
-  const changeLanguage = (key: string | number) => {
-    if (typeof key === 'string' && ['en', 'zh', 'ja'].includes(key)) {
-      i18n.changeLanguage(key);
-      localStorage.setItem('preferredLanguage', key);
-      document.documentElement.lang = key;
-    }
+  const handleLanguageChange = (value: string) => {
+    i18n.changeLanguage(value);
+    localStorage.setItem('preferredLanguage', value);
   };
 
   return (
-    <Dropdown>
-      <DropdownTrigger>
-        <Button variant="bordered" size="sm">
-          {t(`language.${i18n.language}`)}
-        </Button>
-      </DropdownTrigger>
-      <DropdownMenu aria-label="Language selection" onAction={changeLanguage}>
-        <DropdownItem key="en">{t('language.en')}</DropdownItem>
-        <DropdownItem key="zh">{t('language.zh')}</DropdownItem>
-        <DropdownItem key="ja">{t('language.ja')}</DropdownItem>
-      </DropdownMenu>
-    </Dropdown>
+    <CommonSelector
+      options={SUPPORTED_LANGUAGES.map((lang) => ({
+        label: t(`language.${lang}`),
+        value: lang,
+      }))}
+      value={i18n.language}
+      onChange={handleLanguageChange}
+      translationKey="language.title"
+      showLabel={false}
+    />
   );
 };
 

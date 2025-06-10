@@ -309,7 +309,7 @@ const Transactions: React.FC<TransactionsProps> = ({ walletAddress }) => {
         </CardBody>
       </Card>
 
-      <Card className="w-full h-full" onMouseMove={handleMouseMove}>
+      <Card className="w-full" onMouseMove={handleMouseMove}>
         <CardHeader className="flex justify-between">
           <h2 className="text-xl font-bold">{t('transactions.title')}</h2>
           <div className="flex gap-4">
@@ -331,10 +331,10 @@ const Transactions: React.FC<TransactionsProps> = ({ walletAddress }) => {
             </Tabs>
           </div>
         </CardHeader>
-        <CardBody>
+        <CardBody className="h-auto">
           {/* Chart Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
+            <Card className="h-auto">
               <CardHeader>
                 <h3 className="text-lg font-semibold">
                   {t('transactions.chartType.value')}
@@ -347,7 +347,7 @@ const Transactions: React.FC<TransactionsProps> = ({ walletAddress }) => {
               </CardBody>
             </Card>
 
-            <Card>
+            <Card className="h-auto">
               <CardHeader>
                 <h3 className="text-lg font-semibold">
                   {t('transactions.chartType.count')}
@@ -360,7 +360,7 @@ const Transactions: React.FC<TransactionsProps> = ({ walletAddress }) => {
               </CardBody>
             </Card>
 
-            <Card>
+            <Card className="h-auto">
               <CardHeader>
                 <h3 className="text-lg font-semibold">
                   {t('transactions.typeDistribution')}
@@ -415,7 +415,7 @@ const Transactions: React.FC<TransactionsProps> = ({ walletAddress }) => {
               </CardBody>
             </Card>
 
-            <Card>
+            <Card className="h-auto">
               <CardHeader>
                 <h3 className="text-lg font-semibold">
                   {t('transactions.statusDistribution')}
