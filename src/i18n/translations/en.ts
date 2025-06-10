@@ -11,6 +11,8 @@ const translations = {
     title: 'Solana Analytics',
     enterWallet: 'Enter Solana wallet address',
     statistics: 'Statistics Overview',
+    selectWallet: 'Select Wallet',
+    selectWalletPlaceholder: 'Select wallet to analyze',
   },
   transactions: {
     title: 'Transaction History',
@@ -52,6 +54,8 @@ const translations = {
       signature: 'Signature',
       timestamp: 'Timestamp',
     },
+    volume: 'Volume',
+    dailyVolume: 'Daily Volume',
   },
   assets: {
     tokens: 'Token Assets',
@@ -71,6 +75,7 @@ const translations = {
     noAssets: 'No Assets',
     loading: 'Loading...',
     error: 'Error Loading',
+    distribution: 'Asset Distribution',
   },
   language: {
     en: 'English',

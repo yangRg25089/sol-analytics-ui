@@ -11,6 +11,8 @@ const translations = {
     title: 'Solanaアナリティクス',
     enterWallet: 'Solanaウォレットアドレスを入力',
     statistics: '統計概要',
+    selectWallet: 'ウォレットを選択',
+    selectWalletPlaceholder: '分析するウォレットを選択してください',
   },
   transactions: {
     title: '取引履歴',
@@ -52,6 +54,8 @@ const translations = {
       signature: '取引署名',
       timestamp: '取引時間',
     },
+    volume: '取引量',
+    dailyVolume: '日次取引量',
   },
   assets: {
     tokens: 'トークン資産',
@@ -71,6 +75,7 @@ const translations = {
     noAssets: '資産がありません',
     loading: '読み込み中...',
     error: '読み込みエラー',
+    distribution: '資産分布',
   },
   language: {
     en: 'English',

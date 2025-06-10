@@ -11,6 +11,8 @@ const translations = {
     title: 'Solana数据分析',
     enterWallet: '请输入Solana钱包地址',
     statistics: '统计概览',
+    selectWallet: '选择钱包',
+    selectWalletPlaceholder: '请选择要分析的钱包',
   },
   transactions: {
     title: '交易历史',
@@ -52,6 +54,8 @@ const translations = {
       signature: '交易签名',
       timestamp: '交易时间',
     },
+    volume: '交易量',
+    dailyVolume: '每日交易量',
   },
   assets: {
     tokens: '代币资产',
@@ -71,6 +75,7 @@ const translations = {
     noAssets: '暂无资产',
     loading: '加载中...',
     error: '加载失败',
+    distribution: '资产分布',
   },
   language: {
     en: 'English',
