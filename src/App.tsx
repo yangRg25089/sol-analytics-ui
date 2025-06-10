@@ -127,13 +127,13 @@ const App: React.FC = () => {
           <div className="flex-1 flex justify-center">
             <NavbarContent className="hidden sm:flex gap-4">
               <NavbarItem>
-                <Link to="/dashboard">{t('nav.dashboard')}</Link>
+                <Link to="/assets">{t('nav.assets')}</Link>
               </NavbarItem>
               <NavbarItem>
                 <Link to="/transactions">{t('nav.transactions')}</Link>
               </NavbarItem>
               <NavbarItem>
-                <Link to="/assets">{t('nav.assets')}</Link>
+                <Link to="/dashboard">{t('nav.dashboard')}</Link>
               </NavbarItem>
               <NavbarItem>
                 <Link to="/token-management">{t('nav.tokenManagement')}</Link>
