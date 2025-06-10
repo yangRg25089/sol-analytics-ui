@@ -26,7 +26,7 @@ import { useTranslation } from 'react-i18next';
 
 import { API_BASE_URL } from '../config/constants';
 import { useAuth } from '../contexts/AuthContext';
-import { TokenMarketData } from '../types/token';
+import { TokenMarketData } from '../types/market';
 
 interface UserInfo {
   id: string;
@@ -82,7 +82,7 @@ const Home: React.FC = () => {
 
   const fetchTokens = useCallback(
     async (offset: number = 0) => {
-      if (loading && offset > 0) return;
+      if (loading) return;
       try {
         setLoading(true);
         const response = await axios.post(
@@ -107,19 +107,22 @@ const Home: React.FC = () => {
         setLoading(false);
       }
     },
-    [loading, currency],
+    [currency],
   );
 
   useEffect(() => {
     setHasMore(true);
+    setTokens([]);
     fetchTokens(0);
   }, [currency, fetchTokens]);
 
   const handleScroll = useCallback(
     (e: React.UIEvent<HTMLDivElement>) => {
       const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+      const scrollThreshold = 50; // 降低触发阈值
+
       if (
-        scrollHeight - scrollTop - clientHeight < 100 &&
+        scrollHeight - scrollTop - clientHeight < scrollThreshold &&
         !loading &&
         hasMore
       ) {
@@ -241,7 +244,11 @@ const Home: React.FC = () => {
             ref={tableRef}
             className="relative"
             onScroll={handleScroll}
-            style={{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }}
+            style={{
+              maxHeight: 'calc(100vh - 300px)',
+              overflowY: 'auto',
+              position: 'relative',
+            }}
           >
             <Table aria-label="Market tokens">
               <TableHeader>

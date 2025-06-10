@@ -12,17 +12,15 @@ export interface MarketListResponse {
 }
 
 export interface TokenMarketData {
-  id: string;
+  token_address: string;
   symbol: string;
   name: string;
   image: string;
-  current_price: number;
+  price_usd: number;
   market_cap: number;
-  price_change_percentage_24h: number;
-  total_volume: number;
-  price: {
-    USD: number;
-    JPY: number;
-    CNY: number;
-  };
+  volume_24h: number;
+  price_change_24h: number;
+  last_updated: string;
+  ath: number;
+  atl: number;
 }

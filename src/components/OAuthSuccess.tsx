@@ -86,12 +86,12 @@ export const OAuthSuccess: React.FC = () => {
             localStorage.setItem(
               'user_info',
               JSON.stringify({
-                id: response.id,
-                email: response.email,
-                name: response.name,
-                avatar_url: response.avatar_url,
-                role: response.role,
-                user_type: response.user_type,
+                id: response.data.id,
+                email: response.data.email,
+                name: response.data.name,
+                avatar_url: response.data.avatar_url,
+                role: response.data.role,
+                user_type: response.data.user_type,
               }),
             );
 
