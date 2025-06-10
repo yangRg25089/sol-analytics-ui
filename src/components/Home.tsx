@@ -158,66 +158,70 @@ const Home: React.FC = () => {
       {!isAuthenticated ? (
         <Card className="bg-gradient-to-r from-primary-900/20 to-secondary-900/20">
           <CardBody>
-            <div className="flex justify-between items-center">
-              <div>
-                <h2 className="text-xl font-bold">{t('home.welcome')}</h2>
-                <p className="text-default-500">{t('home.loginPrompt')}</p>
+            <div className="flex flex-col items-center gap-4">
+              <div className="flex justify-between items-center w-full">
+                <div className="flex items-center gap-4">
+                  <h2 className="text-xl font-bold">{t('home.welcome')}</h2>
+                  <p className="text-default-500">{t('home.loginPrompt')}</p>
+                </div>
+                <Button
+                  color="primary"
+                  onPress={login}
+                  className="bg-gradient-to-tr from-primary-500 to-secondary-500"
+                >
+                  {t('auth.loginWithGoogle')}
+                </Button>
               </div>
-              <Button
-                color="primary"
-                onPress={login}
-                className="bg-gradient-to-tr from-primary-500 to-secondary-500"
-              >
-                {t('auth.loginWithGoogle')}
-              </Button>
             </div>
           </CardBody>
         </Card>
       ) : (
         <Card className="bg-gradient-to-r from-primary-900/20 to-secondary-900/20">
           <CardBody>
-            <div className="flex justify-between items-center">
-              <div>
-                <h2 className="text-xl font-bold">{t('home.welcome')}</h2>
-                <p className="text-default-500">{t('home.managePrompt')}</p>
+            <div className="flex flex-col items-center gap-4">
+              <div className="flex justify-between items-center w-full">
+                <div className="flex items-center gap-4">
+                  <h2 className="text-xl font-bold">{t('home.welcome')}</h2>
+                  <p className="text-default-500">{t('home.managePrompt')}</p>
+                </div>
+                <Dropdown placement="bottom-end">
+                  <DropdownTrigger>
+                    <User
+                      as="button"
+                      avatarProps={{
+                        isBordered: true,
+                        src: userInfo?.avatar_url,
+                      }}
+                      className="transition-transform"
+                      description={userInfo?.email}
+                      name={userInfo?.name}
+                    />
+                  </DropdownTrigger>
+                  <DropdownMenu aria-label="User Info">
+                    <DropdownItem key="profile" className="h-14 gap-2">
+                      <p className="font-semibold">{t('auth.signedInAs')}</p>
+                      <p className="font-semibold">{userInfo?.email}</p>
+                    </DropdownItem>
+                    <DropdownItem key="role">
+                      <p className="font-semibold">
+                        {t('auth.role')}: {userInfo?.role}
+                      </p>
+                    </DropdownItem>
+                    <DropdownItem key="type">
+                      <p className="font-semibold">
+                        {t('auth.type')}: {userInfo?.user_type}
+                      </p>
+                    </DropdownItem>
+                    <DropdownItem
+                      key="logout"
+                      color="danger"
+                      onClick={handleLogout}
+                    >
+                      {t('auth.logout')}
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
               </div>
-              <Dropdown placement="bottom-end">
-                <DropdownTrigger>
-                  <User
-                    as="button"
-                    avatarProps={{
-                      isBordered: true,
-                      src: userInfo?.avatar_url,
-                    }}
-                    className="transition-transform"
-                    description={userInfo?.email}
-                    name={userInfo?.name}
-                  />
-                </DropdownTrigger>
-                <DropdownMenu aria-label="User Info">
-                  <DropdownItem key="profile" className="h-14 gap-2">
-                    <p className="font-semibold">{t('auth.signedInAs')}</p>
-                    <p className="font-semibold">{userInfo?.email}</p>
-                  </DropdownItem>
-                  <DropdownItem key="role">
-                    <p className="font-semibold">
-                      {t('auth.role')}: {userInfo?.role}
-                    </p>
-                  </DropdownItem>
-                  <DropdownItem key="type">
-                    <p className="font-semibold">
-                      {t('auth.type')}: {userInfo?.user_type}
-                    </p>
-                  </DropdownItem>
-                  <DropdownItem
-                    key="logout"
-                    color="danger"
-                    onClick={handleLogout}
-                  >
-                    {t('auth.logout')}
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
             </div>
           </CardBody>
         </Card>
@@ -231,6 +235,12 @@ const Home: React.FC = () => {
             label={t('home.currency')}
             selectedKeys={[currency]}
             onChange={(e) => setCurrency(e.target.value as any)}
+            className="w-32"
+            classNames={{
+              label: 'text-default-500',
+              value: 'text-default-900',
+              trigger: 'bg-default-100/50',
+            }}
           >
             {currencies.map((c) => (
               <SelectItem key={c.value} value={c.value}>
@@ -240,99 +250,101 @@ const Home: React.FC = () => {
           </Select>
         </CardHeader>
         <CardBody>
-          <div
-            ref={tableRef}
-            className="relative"
-            onScroll={handleScroll}
-            style={{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }}
-          >
-            <Table aria-label={t('home.marketTokens')}>
-              <TableHeader>
-                <TableColumn>{t('home.token')}</TableColumn>
-                <TableColumn>{t('home.price')}</TableColumn>
-                <TableColumn>{t('home.change')}</TableColumn>
-                <TableColumn>{t('home.marketCap')}</TableColumn>
-                <TableColumn>{t('home.volume')}</TableColumn>
-                <TableColumn>{t('home.ath')}</TableColumn>
-                <TableColumn>{t('home.atl')}</TableColumn>
-                <TableColumn>{t('home.lastUpdated')}</TableColumn>
-              </TableHeader>
-              <TableBody>
-                {tokens.map((token) => (
-                  <TableRow key={token.token_address}>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Image
-                          src={token.image}
-                          alt={token.name}
-                          className="w-6 h-6"
-                        />
-                        <div>
-                          <p className="font-medium">{token.name}</p>
-                          <p className="text-small text-default-500">
-                            {token.symbol.toUpperCase()}
-                          </p>
+          <div className="flex flex-col items-center gap-4">
+            <div
+              ref={tableRef}
+              className="relative w-full"
+              onScroll={handleScroll}
+              style={{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }}
+            >
+              <Table aria-label={t('home.marketTokens')}>
+                <TableHeader>
+                  <TableColumn>{t('home.token')}</TableColumn>
+                  <TableColumn>{t('home.price')}</TableColumn>
+                  <TableColumn>{t('home.change')}</TableColumn>
+                  <TableColumn>{t('home.marketCap')}</TableColumn>
+                  <TableColumn>{t('home.volume')}</TableColumn>
+                  <TableColumn>{t('home.ath')}</TableColumn>
+                  <TableColumn>{t('home.atl')}</TableColumn>
+                  <TableColumn>{t('home.lastUpdated')}</TableColumn>
+                </TableHeader>
+                <TableBody>
+                  {tokens.map((token) => (
+                    <TableRow key={token.token_address}>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Image
+                            src={token.image}
+                            alt={token.name}
+                            className="w-6 h-6"
+                          />
+                          <div>
+                            <p className="font-medium">{token.name}</p>
+                            <p className="text-small text-default-500">
+                              {token.symbol.toUpperCase()}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p>{formatPrice(token.price_usd ?? 0)}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-1">
-                        <Chip
-                          variant="flat"
-                          color={
-                            (token.price_change_24h ?? 0) >= 0
-                              ? 'success'
-                              : 'danger'
-                          }
-                        >
-                          {(token.price_change_24h ?? 0).toFixed(2)}%
-                        </Chip>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p>{formatPrice((token.market_cap ?? 0) / 1e6)}M</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p>{formatPrice((token.volume_24h ?? 0) / 1e6)}M</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p>{formatPrice(token.ath ?? 0)}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p>{formatPrice(token.atl ?? 0)}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p>{new Date(token.last_updated).toLocaleString()}</p>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            {loading && (
-              <div className="flex justify-center py-4">
-                <Spinner size="sm" />
-              </div>
-            )}
-            {!hasMore && (
-              <div className="text-center py-4 text-default-500">
-                {t('home.noMoreTokens')}
-              </div>
-            )}
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p>{formatPrice(token.price_usd ?? 0)}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="space-y-1">
+                          <Chip
+                            variant="flat"
+                            color={
+                              (token.price_change_24h ?? 0) >= 0
+                                ? 'success'
+                                : 'danger'
+                            }
+                          >
+                            {(token.price_change_24h ?? 0).toFixed(2)}%
+                          </Chip>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p>{formatPrice((token.market_cap ?? 0) / 1e6)}M</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p>{formatPrice((token.volume_24h ?? 0) / 1e6)}M</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p>{formatPrice(token.ath ?? 0)}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p>{formatPrice(token.atl ?? 0)}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p>{new Date(token.last_updated).toLocaleString()}</p>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              {loading && (
+                <div className="flex justify-center py-4">
+                  <Spinner size="sm" />
+                </div>
+              )}
+              {!hasMore && (
+                <div className="text-center py-4 text-default-500">
+                  {t('home.noMoreTokens')}
+                </div>
+              )}
+            </div>
           </div>
         </CardBody>
       </Card>

@@ -93,20 +93,22 @@ const App: React.FC = () => {
           </NavbarItem>
         </NavbarContent>
       </Navbar>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route
-          path="/transactions"
-          element={<Transactions walletAddress="demo-wallet" />}
-        />
-        <Route
-          path="/assets"
-          element={<Assets walletAddress="demo-wallet" />}
-        />
-        <Route path="/token-management" element={<TokenManagement />} />
-        <Route path="/oauth-success" element={<OAuthSuccess />} />
-      </Routes>
+      <div className="container mx-auto px-4 py-6 max-w-7xl">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route
+            path="/transactions"
+            element={<Transactions walletAddress="demo-wallet" />}
+          />
+          <Route
+            path="/assets"
+            element={<Assets walletAddress="demo-wallet" />}
+          />
+          <Route path="/token-management" element={<TokenManagement />} />
+          <Route path="/oauth-success" element={<OAuthSuccess />} />
+        </Routes>
+      </div>
     </>
   );
 };

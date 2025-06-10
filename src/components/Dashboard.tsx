@@ -351,7 +351,7 @@ const Dashboard: React.FC<DashboardProps> = ({ defaultWallet = '' }) => {
             <Card>
               <CardHeader>
                 <h3 className="text-lg font-semibold">
-                  {t('transactions.types')}
+                  {t('transactions.title')}
                 </h3>
               </CardHeader>
               <CardBody>

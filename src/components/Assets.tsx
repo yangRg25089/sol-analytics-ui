@@ -65,27 +65,35 @@ const Assets: React.FC<AssetsProps> = ({ walletAddress }) => {
       {/* Performance Overview */}
       {performance && (
         <Card className="bg-gradient-to-r from-primary-900/20 to-secondary-900/20">
-          <CardBody className="flex flex-row justify-between">
-            <div>
-              <p className="text-xl">{t('assets.totalValue')}</p>
-              <p className="text-3xl font-bold">${totalValue.toFixed(2)}</p>
-            </div>
-            <div className="flex gap-4">
-              <div>
-                <p>{t('assets.change24h')}</p>
-                <Chip
-                  color={performance.valueChange24h > 0 ? 'success' : 'danger'}
-                >
-                  {performance.percentageChange24h.toFixed(2)}%
-                </Chip>
-              </div>
-              <div>
-                <p>{t('assets.change7d')}</p>
-                <Chip
-                  color={performance.valueChange7d > 0 ? 'success' : 'danger'}
-                >
-                  {performance.percentageChange7d.toFixed(2)}%
-                </Chip>
+          <CardBody>
+            <div className="flex flex-col items-center gap-4">
+              <div className="flex justify-center items-center gap-6 w-full">
+                <div className="flex items-center gap-2">
+                  <p className="text-xl">{t('assets.totalValue')}:</p>
+                  <p className="text-3xl font-bold">${totalValue.toFixed(2)}</p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <p>{t('assets.change24h')}:</p>
+                    <Chip
+                      color={
+                        performance.valueChange24h > 0 ? 'success' : 'danger'
+                      }
+                    >
+                      {performance.percentageChange24h.toFixed(2)}%
+                    </Chip>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <p>{t('assets.change7d')}:</p>
+                    <Chip
+                      color={
+                        performance.valueChange7d > 0 ? 'success' : 'danger'
+                      }
+                    >
+                      {performance.percentageChange7d.toFixed(2)}%
+                    </Chip>
+                  </div>
+                </div>
               </div>
             </div>
           </CardBody>
@@ -95,66 +103,72 @@ const Assets: React.FC<AssetsProps> = ({ walletAddress }) => {
       {/* Token List */}
       <Card>
         <CardHeader>
-          <h2 className="text-xl font-bold">{t('assets.tokens')}</h2>
+          <h2 className="text-xl font-bold text-center w-full">
+            {t('assets.tokens')}
+          </h2>
         </CardHeader>
         <CardBody>
-          <div className="space-y-4">
+          <div className="flex flex-col items-center gap-4">
             {tokens.length === 0 ? (
               <p className="text-center text-default-500">
                 {t('assets.noAssets')}
               </p>
             ) : (
-              tokens.map((token) => (
-                <motion.div
-                  key={token.mint}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center justify-between p-4 rounded-lg bg-default-100"
-                >
-                  <div className="flex items-center gap-4">
-                    {token.logoUrl && (
-                      <Image
-                        src={token.logoUrl}
-                        alt={token.symbol}
-                        className="w-8 h-8 rounded-full"
-                      />
-                    )}
-                    <div>
-                      <p className="font-medium">{token.name}</p>
-                      <p className="text-sm text-default-400">{token.symbol}</p>
+              <div className="w-full space-y-4">
+                {tokens.map((token) => (
+                  <motion.div
+                    key={token.mint}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center justify-between p-4 rounded-lg bg-default-100"
+                  >
+                    <div className="flex items-center gap-4">
+                      {token.logoUrl && (
+                        <Image
+                          src={token.logoUrl}
+                          alt={token.symbol}
+                          className="w-8 h-8 rounded-full"
+                        />
+                      )}
+                      <div>
+                        <p className="font-medium">{token.name}</p>
+                        <p className="text-sm text-default-400">
+                          {token.symbol}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-right">
-                      <p className="font-medium">
-                        {t('assets.total')}:{' '}
-                        {(token.amount / Math.pow(10, token.decimals)).toFixed(
-                          4,
-                        )}
-                      </p>
-                      <p className="text-sm text-default-400">
-                        {t('assets.value')}: $
-                        {(
-                          (token.usdPrice * token.amount) /
-                          Math.pow(10, token.decimals)
-                        ).toFixed(2)}
-                      </p>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <p className="font-medium">
+                          {t('assets.total')}:{' '}
+                          {(
+                            token.amount / Math.pow(10, token.decimals)
+                          ).toFixed(4)}
+                        </p>
+                        <p className="text-sm text-default-400">
+                          {t('assets.value')}: $
+                          {(
+                            (token.usdPrice * token.amount) /
+                            Math.pow(10, token.decimals)
+                          ).toFixed(2)}
+                        </p>
+                      </div>
+                      <div className="flex gap-2">
+                        <TokenFavorite
+                          tokenId={token.mint}
+                          isFavorite={favorites.has(token.mint)}
+                          onToggleFavorite={handleToggleFavorite}
+                        />
+                        <TokenTransfer
+                          tokenId={token.mint}
+                          balance={token.amount / Math.pow(10, token.decimals)}
+                          onTransfer={handleTransfer}
+                        />
+                      </div>
                     </div>
-                    <div className="flex gap-2">
-                      <TokenFavorite
-                        tokenId={token.mint}
-                        isFavorite={favorites.has(token.mint)}
-                        onToggleFavorite={handleToggleFavorite}
-                      />
-                      <TokenTransfer
-                        tokenId={token.mint}
-                        balance={token.amount / Math.pow(10, token.decimals)}
-                        onTransfer={handleTransfer}
-                      />
-                    </div>
-                  </div>
-                </motion.div>
-              ))
+                  </motion.div>
+                ))}
+              </div>
             )}
           </div>
         </CardBody>
@@ -163,39 +177,45 @@ const Assets: React.FC<AssetsProps> = ({ walletAddress }) => {
       {/* NFT Grid */}
       <Card>
         <CardHeader>
-          <h2 className="text-xl font-bold">{t('assets.nfts')}</h2>
+          <h2 className="text-xl font-bold text-center w-full">
+            {t('assets.nfts')}
+          </h2>
         </CardHeader>
         <CardBody>
-          {nfts.length === 0 ? (
-            <p className="text-center text-default-500">
-              {t('assets.noAssets')}
-            </p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {nfts.map((nft) => (
-                <Card key={nft.mint} className="overflow-hidden">
-                  <div className="relative h-48 w-full bg-default-100 flex items-center justify-center">
-                    <Image
-                      src={nft.image}
-                      alt={nft.name}
-                      className="max-w-full max-h-full object-contain"
-                      fallbackSrc="https://via.placeholder.com/300x300?text=No+Image"
-                      loading="lazy"
-                      removeWrapper
-                    />
-                  </div>
-                  <CardBody className="p-4">
-                    <p className="font-medium truncate">{nft.name}</p>
-                    {nft.collection && (
-                      <p className="text-sm text-default-400 truncate">
-                        {nft.collection}
+          <div className="flex flex-col items-center gap-4">
+            {nfts.length === 0 ? (
+              <p className="text-center text-default-500">
+                {t('assets.noAssets')}
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
+                {nfts.map((nft) => (
+                  <Card key={nft.mint} className="overflow-hidden">
+                    <div className="relative h-48 w-full bg-default-100 flex items-center justify-center">
+                      <Image
+                        src={nft.image}
+                        alt={nft.name}
+                        className="max-w-full max-h-full object-contain"
+                        fallbackSrc="https://via.placeholder.com/300x300?text=No+Image"
+                        loading="lazy"
+                        removeWrapper
+                      />
+                    </div>
+                    <CardBody className="p-4">
+                      <p className="font-medium truncate text-center">
+                        {nft.name}
                       </p>
-                    )}
-                  </CardBody>
-                </Card>
-              ))}
-            </div>
-          )}
+                      {nft.collection && (
+                        <p className="text-sm text-default-400 truncate text-center">
+                          {nft.collection}
+                        </p>
+                      )}
+                    </CardBody>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
         </CardBody>
       </Card>
     </div>
