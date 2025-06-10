@@ -160,17 +160,15 @@ const Home: React.FC = () => {
           <CardBody>
             <div className="flex justify-between items-center">
               <div>
-                <h2 className="text-xl font-bold">Welcome to Sol Analytics</h2>
-                <p className="text-default-500">
-                  Login to manage your tokens and track your portfolio
-                </p>
+                <h2 className="text-xl font-bold">{t('home.welcome')}</h2>
+                <p className="text-default-500">{t('home.loginPrompt')}</p>
               </div>
               <Button
                 color="primary"
                 onPress={login}
                 className="bg-gradient-to-tr from-primary-500 to-secondary-500"
               >
-                Login with Google
+                {t('auth.loginWithGoogle')}
               </Button>
             </div>
           </CardBody>
@@ -180,10 +178,8 @@ const Home: React.FC = () => {
           <CardBody>
             <div className="flex justify-between items-center">
               <div>
-                <h2 className="text-xl font-bold">Welcome to Sol Analytics</h2>
-                <p className="text-default-500">
-                  Manage your tokens and track your portfolio
-                </p>
+                <h2 className="text-xl font-bold">{t('home.welcome')}</h2>
+                <p className="text-default-500">{t('home.managePrompt')}</p>
               </div>
               <Dropdown placement="bottom-end">
                 <DropdownTrigger>
@@ -200,21 +196,25 @@ const Home: React.FC = () => {
                 </DropdownTrigger>
                 <DropdownMenu aria-label="User Info">
                   <DropdownItem key="profile" className="h-14 gap-2">
-                    <p className="font-semibold">Signed in as</p>
+                    <p className="font-semibold">{t('auth.signedInAs')}</p>
                     <p className="font-semibold">{userInfo?.email}</p>
                   </DropdownItem>
                   <DropdownItem key="role">
-                    <p className="font-semibold">Role: {userInfo?.role}</p>
+                    <p className="font-semibold">
+                      {t('auth.role')}: {userInfo?.role}
+                    </p>
                   </DropdownItem>
                   <DropdownItem key="type">
-                    <p className="font-semibold">Type: {userInfo?.user_type}</p>
+                    <p className="font-semibold">
+                      {t('auth.type')}: {userInfo?.user_type}
+                    </p>
                   </DropdownItem>
                   <DropdownItem
                     key="logout"
                     color="danger"
                     onClick={handleLogout}
                   >
-                    Log Out
+                    {t('auth.logout')}
                   </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
@@ -244,19 +244,18 @@ const Home: React.FC = () => {
             ref={tableRef}
             className="relative"
             onScroll={handleScroll}
-            style={{
-              maxHeight: 'calc(100vh - 300px)',
-              overflowY: 'auto',
-              position: 'relative',
-            }}
+            style={{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }}
           >
-            <Table aria-label="Market tokens">
+            <Table aria-label={t('home.marketTokens')}>
               <TableHeader>
-                <TableColumn>TOKEN</TableColumn>
-                <TableColumn>PRICE</TableColumn>
-                <TableColumn>24H CHANGE</TableColumn>
-                <TableColumn>MARKET CAP</TableColumn>
-                <TableColumn>VOLUME</TableColumn>
+                <TableColumn>{t('home.token')}</TableColumn>
+                <TableColumn>{t('home.price')}</TableColumn>
+                <TableColumn>{t('home.change')}</TableColumn>
+                <TableColumn>{t('home.marketCap')}</TableColumn>
+                <TableColumn>{t('home.volume')}</TableColumn>
+                <TableColumn>{t('home.ath')}</TableColumn>
+                <TableColumn>{t('home.atl')}</TableColumn>
+                <TableColumn>{t('home.lastUpdated')}</TableColumn>
               </TableHeader>
               <TableBody>
                 {tokens.map((token) => (
@@ -276,22 +275,49 @@ const Home: React.FC = () => {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>{formatPrice(token.price_usd)}</TableCell>
                     <TableCell>
-                      <Chip
-                        variant="flat"
-                        color={
-                          token.price_change_24h >= 0 ? 'success' : 'danger'
-                        }
-                      >
-                        {token.price_change_24h.toFixed(2)}%
-                      </Chip>
+                      <div>
+                        <p>{formatPrice(token.price_usd ?? 0)}</p>
+                      </div>
                     </TableCell>
                     <TableCell>
-                      {formatPrice(token.market_cap / 1e6)}M
+                      <div className="space-y-1">
+                        <Chip
+                          variant="flat"
+                          color={
+                            (token.price_change_24h ?? 0) >= 0
+                              ? 'success'
+                              : 'danger'
+                          }
+                        >
+                          {(token.price_change_24h ?? 0).toFixed(2)}%
+                        </Chip>
+                      </div>
                     </TableCell>
                     <TableCell>
-                      {formatPrice(token.volume_24h / 1e6)}M
+                      <div>
+                        <p>{formatPrice((token.market_cap ?? 0) / 1e6)}M</p>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div>
+                        <p>{formatPrice((token.volume_24h ?? 0) / 1e6)}M</p>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div>
+                        <p>{formatPrice(token.ath ?? 0)}</p>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div>
+                        <p>{formatPrice(token.atl ?? 0)}</p>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div>
+                        <p>{new Date(token.last_updated).toLocaleString()}</p>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -304,7 +330,7 @@ const Home: React.FC = () => {
             )}
             {!hasMore && (
               <div className="text-center py-4 text-default-500">
-                No more tokens
+                {t('home.noMoreTokens')}
               </div>
             )}
           </div>

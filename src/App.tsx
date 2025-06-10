@@ -19,7 +19,7 @@ import Transactions from './components/Transactions';
 import { API_BASE_URL, SUPPORTED_LANGUAGES } from './config/constants';
 
 const App: React.FC = () => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const location = useLocation();
 
   useEffect(() => {
@@ -70,21 +70,21 @@ const App: React.FC = () => {
       <Navbar isBordered>
         <NavbarBrand>
           <Link to="/">
-            <h1 className="text-xl font-bold">SolPT Analytics</h1>
+            <h1 className="text-xl font-bold">{t('app.title')}</h1>
           </Link>
         </NavbarBrand>
         <NavbarContent>
           <NavbarItem>
-            <Link to="/dashboard">Dashboard</Link>
+            <Link to="/dashboard">{t('nav.dashboard')}</Link>
           </NavbarItem>
           <NavbarItem>
-            <Link to="/transactions">Transactions</Link>
+            <Link to="/transactions">{t('nav.transactions')}</Link>
           </NavbarItem>
           <NavbarItem>
-            <Link to="/assets">Assets</Link>
+            <Link to="/assets">{t('nav.assets')}</Link>
           </NavbarItem>
           <NavbarItem>
-            <Link to="/token-management">Token Management</Link>
+            <Link to="/token-management">{t('nav.tokenManagement')}</Link>
           </NavbarItem>
         </NavbarContent>
         <NavbarContent>
