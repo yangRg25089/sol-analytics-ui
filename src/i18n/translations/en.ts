@@ -56,6 +56,9 @@ const translations = {
     },
     volume: 'Volume',
     dailyVolume: 'Daily Volume',
+    count: 'Transaction Count',
+    typeDistribution: 'Transaction Type Distribution',
+    statusDistribution: 'Transaction Status Distribution',
   },
   assets: {
     tokens: 'Token Assets',
@@ -147,6 +150,9 @@ const translations = {
     noDescription: 'No description',
     noWebsite: 'No website',
     tokenInfo: 'Token Information',
+    totalTokens: 'Total Tokens',
+    totalMarketCap: 'Total Market Cap',
+    totalHolders: 'Total Holders',
     statusTypes: {
       active: 'Active',
       paused: 'Paused',

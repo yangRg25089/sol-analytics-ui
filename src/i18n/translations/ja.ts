@@ -56,6 +56,9 @@ const translations = {
     },
     volume: '取引量',
     dailyVolume: '日次取引量',
+    count: '取引件数',
+    typeDistribution: '取引タイプ分布',
+    statusDistribution: '取引状態分布',
   },
   assets: {
     tokens: 'トークン資産',
@@ -147,6 +150,9 @@ const translations = {
     noDescription: '説明なし',
     noWebsite: 'ウェブサイトなし',
     tokenInfo: 'トークン情報',
+    totalTokens: 'トークン総数',
+    totalMarketCap: '総時価総額',
+    totalHolders: '総保有者数',
     statusTypes: {
       active: '有効',
       paused: '一時停止',

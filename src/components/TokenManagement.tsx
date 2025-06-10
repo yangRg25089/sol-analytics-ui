@@ -3,25 +3,13 @@ import {
   Card,
   CardBody,
   Chip,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
   Input,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Pagination,
   Spinner,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-  Tooltip,
   useDisclosure,
 } from '@nextui-org/react';
 import axios from 'axios';
@@ -304,7 +292,39 @@ export const TokenManagement: React.FC = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
+      {/* 添加标题卡片 */}
+      <Card className="bg-gradient-to-r from-primary-900/20 to-secondary-900/20">
+        <CardBody>
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex justify-center items-center gap-6 w-full">
+              <div className="flex items-center gap-2">
+                <p className="text-xl">{t('tokenManagement.totalTokens')}:</p>
+                <p className="text-3xl font-bold">{tokens.length}</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <p>{t('tokenManagement.totalMarketCap')}:</p>
+                  <p className="text-2xl font-bold">
+                    {formatNumber(
+                      tokens.reduce((sum, token) => sum + token.marketCap, 0),
+                    )}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <p>{t('tokenManagement.totalHolders')}:</p>
+                  <p className="text-2xl font-bold">
+                    {formatNumber(
+                      tokens.reduce((sum, token) => sum + token.holders, 0),
+                    )}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardBody>
+      </Card>
+
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">{t('tokenManagement.title')}</h1>
         <Button color="primary" onPress={onOpen}>

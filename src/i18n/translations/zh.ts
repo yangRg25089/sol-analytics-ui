@@ -56,6 +56,9 @@ const translations = {
     },
     volume: '交易量',
     dailyVolume: '日交易量',
+    count: '交易笔数',
+    typeDistribution: '交易类型分布',
+    statusDistribution: '交易状态分布',
   },
   assets: {
     tokens: '代币资产',
@@ -147,6 +150,9 @@ const translations = {
     noDescription: '暂无描述',
     noWebsite: '暂无网站',
     tokenInfo: '代币信息',
+    totalTokens: '代币总数',
+    totalMarketCap: '总市值',
+    totalHolders: '总持有人数',
     statusTypes: {
       active: '活跃',
       paused: '已暂停',
