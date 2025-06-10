@@ -94,15 +94,6 @@ const Dashboard: React.FC<DashboardProps> = ({ defaultWallet = '' }) => {
 
   // 获取已连接的钱包列表
   const connectedWallets = [
-    ...wallets
-      .filter(
-        (wallet) =>
-          wallet.readyState === 'Installed' || wallet.readyState === 'Loadable',
-      )
-      .map((wallet) => ({
-        label: wallet.adapter.name,
-        value: wallet.adapter.publicKey?.toBase58() || '',
-      })),
     // 添加测试钱包
     {
       label: 'Test Wallet 1',
@@ -116,6 +107,24 @@ const Dashboard: React.FC<DashboardProps> = ({ defaultWallet = '' }) => {
       label: 'Test Wallet 3',
       value: '9xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU',
     },
+    // 添加实际连接的钱包，使用 Set 去重
+    ...Array.from(
+      new Set(
+        wallets
+          .filter(
+            (wallet) =>
+              wallet.readyState === 'Installed' ||
+              wallet.readyState === 'Loadable',
+          )
+          .map((wallet) => wallet.adapter.name),
+      ),
+    ).map((name) => {
+      const wallet = wallets.find((w) => w.adapter.name === name);
+      return {
+        label: name,
+        value: wallet?.adapter.publicKey?.toBase58() || '',
+      };
+    }),
   ];
 
   useEffect(() => {
